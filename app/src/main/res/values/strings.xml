@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">FerdiTheFly</string>
+    <string name="app_name">Ferdi the Fly</string>
+    <string name="info">Ferdi needs to gather 500 points in order to reach safety and he needs to dodge various enemies in the process. Your job is to help Ferdi get through!</string>
 </resources>

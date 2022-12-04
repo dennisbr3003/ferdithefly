@@ -3,7 +3,10 @@ package com.dennis_brink.android.ferdithefly;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
+import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -18,7 +21,8 @@ public class MainActivity extends AppCompatActivity {
     AppCompatButton btnStart;
 
     private Animation animation;
-
+    private MediaPlayer mediaPlayer;
+    private boolean media_playing = true;
     HashMap<String, ImageView> characters = new HashMap<>();
 
     @Override
@@ -54,6 +58,40 @@ public class MainActivity extends AppCompatActivity {
         for (String key : characters.keySet()) {
             characters.get(key).setAnimation(animation);
         }
+
+    }
+    
+    @Override
+    protected void onResume() {
+
+        super.onResume();
+
+        mediaPlayer = MediaPlayer.create(MainActivity.this, R.raw.getready3);
+        mediaPlayer.start();
+
+        // volume button (mute or on)
+        imageViewVolume.setOnClickListener(view -> {
+            if(media_playing){
+                mediaPlayer.setVolume(0,0); // mute
+                imageViewVolume.setImageResource(R.drawable.ic_baseline_volume_off_24);
+                media_playing = false;
+            } else {
+                mediaPlayer.setVolume(1,1); // un mute
+                imageViewVolume.setImageResource(R.drawable.ic_baseline_volume_up_24);
+                media_playing = true;
+            }
+        });
+
+        btnStart.setOnClickListener(view -> {
+
+            // close audio
+            mediaPlayer.reset();
+            imageViewVolume.setImageResource(R.drawable.ic_baseline_volume_up_24);
+            // start game activity
+            Intent i = new Intent(MainActivity.this, GameActivity.class);
+            startActivity(i);
+
+        });
 
     }
 

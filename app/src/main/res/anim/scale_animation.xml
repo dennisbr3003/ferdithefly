@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- coordinate 0,0 is always upper left corner
+         in order to get he center of the character
+         pivot axis are set to 50%
+         An object is one if any of the scales is 0.0 and of
+         normal size at 1.0. Therefor to get from half the
+         size to the full size we need to start from 0.5
+         on the x- and y-scale etc..
+    -->
+
+    <scale
+        android:duration="1500"
+        android:pivotX="50%"
+        android:pivotY="50%"
+        android:fromXScale="0.8"
+        android:toXScale="1.0"
+        android:fromYScale="0.8"
+        android:toYScale="1.0"
+        android:repeatMode="reverse"
+        android:repeatCount="infinite"/>
+
+</set>

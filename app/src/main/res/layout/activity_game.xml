@@ -2,8 +2,135 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg001"
     tools:context=".GameActivity">
 
+    <ImageView
+        android:id="@+id/imageViewGameFerdi"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ferdi" />
+
+    <TextView
+        android:id="@+id/textViewStart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="100dp"
+        android:layout_marginEnd="100dp"
+        android:layout_marginBottom="150dp"
+        android:fontFamily="sans-serif-smallcaps"
+        android:text="Tap to Play Game"
+        android:textAlignment="center"
+        android:textColor="#DD2C00"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageViewGameCoin"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        app:srcCompat="@drawable/coin"
+        tools:layout_editor_absoluteX="627dp"
+        tools:layout_editor_absoluteY="16dp"
+        tools:visibility="invisible" />
+
+    <ImageView
+        android:id="@+id/imageViewGameCoin2"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        app:srcCompat="@drawable/coin"
+        tools:layout_editor_absoluteX="627dp"
+        tools:layout_editor_absoluteY="60dp"
+        tools:visibility="invisible" />
+
+    <ImageView
+        android:id="@+id/imageViewGameGerm"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        app:srcCompat="@drawable/germ1"
+        tools:layout_editor_absoluteX="607dp"
+        tools:layout_editor_absoluteY="109dp"
+        tools:visibility="invisible" />
+
+    <ImageView
+        android:id="@+id/imageViewGameMine"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        app:srcCompat="@drawable/minesweeper_mine"
+        tools:layout_editor_absoluteX="622dp"
+        tools:layout_editor_absoluteY="181dp"
+        tools:visibility="invisible" />
+
+    <ImageView
+        android:id="@+id/imageViewGameWhirlwind"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        app:srcCompat="@drawable/whirlwind"
+        tools:layout_editor_absoluteX="621dp"
+        tools:layout_editor_absoluteY="242dp"
+        tools:visibility="invisible" />
+
+    <ImageView
+        android:id="@+id/imageViewGameCoinScore"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/coin" />
+
+    <TextView
+        android:id="@+id/textViewScore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="16dp"
+        android:text="0"
+        android:textColor="#DD2C00"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/imageViewGameCoinScore"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageViewLive1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toStartOf="@+id/imageViewLive2"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_favorite_24_red" />
+
+    <ImageView
+        android:id="@+id/imageViewLive2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toStartOf="@+id/imageViewLive3"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_favorite_24_red" />
+
+    <ImageView
+        android:id="@+id/imageViewLive3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textViewScore"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_favorite_24_red" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,30 +3,30 @@ package com.dennis_brink.android.ferdithefly;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
-import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
-import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 
-import java.sql.Array;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
-    ImageView imageViewFerdi, imageViewGerm, imageViewMine, imageViewWhirlwind, imageViewCoin, imageViewVolume;
+    ImageView imageViewFerdi, imageViewGerm, imageViewMine, imageViewBat, imageViewCoin, imageViewVolume;
     AppCompatButton btnStart;
 
     private Animation animation;
     private MediaPlayer mediaPlayer;
     private boolean media_playing = true;
     HashMap<String, ImageView> characters = new HashMap<>();
+
+    private Handler handler;
+    private Runnable runnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
         imageViewFerdi = findViewById(R.id.imageViewFerdi);
         imageViewGerm = findViewById(R.id.imageViewGerm);
         imageViewMine = findViewById(R.id.imageViewMine);
-        imageViewWhirlwind = findViewById(R.id.imageViewWhirlwind);
+        imageViewBat = findViewById(R.id.imageViewBat);
         imageViewCoin = findViewById(R.id.imageViewCoin);
         imageViewVolume = findViewById(R.id.imageViewVolume);
 
@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         characters.put("ferdi", imageViewFerdi);
         characters.put("germ", imageViewGerm);
         characters.put("mine", imageViewMine);
-        characters.put("wirlwind", imageViewWhirlwind);
+        characters.put("Bat", imageViewBat);
         characters.put("coin", imageViewCoin);
     }
 
@@ -78,6 +78,20 @@ public class MainActivity extends AppCompatActivity {
         mediaPlayer.setLooping(true); // play the intro in a loop (hopefully)
         mediaPlayer.start();
 
+        handler = new Handler(); // bat animation
+        runnable = () -> {
+            if (imageViewBat.getTag().equals("bat_1")){
+                imageViewBat.setImageResource(R.drawable.bat_2);
+                imageViewBat.setTag("bat_2");
+            } else {
+                imageViewBat.setImageResource(R.drawable.bat_1);
+                imageViewBat.setTag("bat_1");
+            }
+            handler.postDelayed(runnable, 80);
+        };
+
+        handler.post(runnable);
+
         // volume button (mute or on)
         imageViewVolume.setOnClickListener(view -> {
             if(media_playing){
@@ -96,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
             // close audio
             mediaPlayer.reset();
             imageViewVolume.setImageResource(R.drawable.ic_baseline_volume_up_24);
+            handler.removeCallbacks(runnable);
             // start game activity
             Intent i = new Intent(MainActivity.this, GameActivity.class);
             startActivity(i);

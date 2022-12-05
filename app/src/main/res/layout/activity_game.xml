@@ -73,11 +73,12 @@
         tools:layout_editor_absoluteY="181dp" />
 
     <ImageView
-        android:id="@+id/imageViewGameWhirlwind"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:id="@+id/imageViewGameBat"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:tag="bat_1"
         android:visibility="invisible"
-        app:srcCompat="@drawable/whirlwind"
+        app:srcCompat="@drawable/bat_1"
         tools:layout_editor_absoluteX="621dp"
         tools:layout_editor_absoluteY="242dp" />
 

@@ -63,20 +63,10 @@ public class MainActivity extends AppCompatActivity {
                 characters.get(key).setAnimation(animation);
             } else {
                 characters.get(key).setAnimation(animation);
-                rotate_Clockwise(characters.get(key));
+                setRotation(imageViewMine);
             }
         }
 
-    }
-
-    public void rotate_Clockwise(View view) {
-        //rotate animation stops after full circle, this does not
-        ObjectAnimator rotate = ObjectAnimator.ofFloat(view, "rotation", 180f, 0f);
-        rotate.setInterpolator(new LinearInterpolator());
-        rotate.setRepeatCount(-1);
-        //rotate.setFillAfter(true);
-        rotate.setDuration(15000);
-        rotate.start();
     }
 
     @Override
@@ -113,5 +103,17 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
+    public void setRotation(View view){
+        view.animate().rotationBy(-360).withEndAction(new Runnable() {
+            @Override
+            public void run() {
+                // animation ends, so start again
+                view.animate().rotationBy(-360).withEndAction(this).setDuration(3000).setInterpolator(new LinearInterpolator()).start();
+            }
+        }).setDuration(3000).setInterpolator(new LinearInterpolator()).start();
+    }
+
+
 
 }

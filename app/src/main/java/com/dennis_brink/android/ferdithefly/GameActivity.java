@@ -29,8 +29,13 @@ public class GameActivity extends AppCompatActivity {
     private Runnable runnable;
     private Handler handler;
 
-    //private Animation animation;
+    private Runnable runnableFerdi;
+    private Handler handlerFerdi;
 
+
+    //private Animation animation;
+    float start = 0.8f;
+    float end = 1f;
     // XY coordinates Ferdi, and all the other characters
     int ferdiX, characterX;
     int ferdiY, characterY;
@@ -38,6 +43,9 @@ public class GameActivity extends AppCompatActivity {
     // screen dimensions
     int screenHeight;
     int screenWidth;
+
+    int gamespeed = 40;
+    int ferdisensitivity = 60;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -60,11 +68,8 @@ public class GameActivity extends AppCompatActivity {
         textViewTabToPlay = findViewById(R.id.textViewStart);
         textViewScore = findViewById(R.id.textViewScore);
 
-        //animation = AnimationUtils.loadAnimation(GameActivity.this,R.anim.scale_animation);
-        //imageViewGameGerm.setAnimation(animation); //behaves unpredictably
-
-        rotate_Clockwise(imageViewGameMine); // the mine should rotate
-                                              // the germ should pulse
+        setRotation(imageViewGameMine); // the mine should rotate
+        setScale(imageViewGameGerm); // the germ should pulse
 
         constraintLayout = findViewById(R.id.constraintLayout);
 
@@ -82,16 +87,23 @@ public class GameActivity extends AppCompatActivity {
                 ferdiX = (int)imageViewGameFerdi.getX();
                 ferdiY = (int)imageViewGameFerdi.getY();
 
+                handlerFerdi = new Handler();
+                runnableFerdi= () -> {
+                    moveFerdi();
+                    handlerFerdi.postDelayed(runnableFerdi, ferdisensitivity);
+                };
+                handlerFerdi.post(runnableFerdi);
+
                 handler = new Handler();
                 runnable = () -> {
-                    moveFerdi();
+
                     enemyControl(imageViewGameGerm, 160);
                     enemyControl(imageViewGameMine, 180);
                     enemyControl(imageViewGameCoin, 140);
                     enemyControl(imageViewGameCoin2, 110);
                     enemyControl(imageViewGameWhirlwind, 120);
 
-                    handler.postDelayed(runnable, 40);
+                    handler.postDelayed(runnable, gamespeed);
                 };
                 handler.post(runnable);
             } else { // screen is touched one or more times
@@ -102,7 +114,6 @@ public class GameActivity extends AppCompatActivity {
                     touchControl = false;
                 }
             }
-
             return true;
         });
 
@@ -139,7 +150,7 @@ public class GameActivity extends AppCompatActivity {
         characterY = (int)character.getY();
 
         characterX = characterX - (screenWidth / speed);
-        if(characterX < 0){
+        if(characterX < -200){ // make sur the just don't disappear on the edge
             characterX = screenWidth + 200; // set it back completely to the left plus an extra 200 to get completely off the screen
             characterY = (int) Math.floor(Math.random() * screenHeight); // reset Y-axis position to a random coordinate (so it starts at a different height)
             if(characterY <= 0){ // prevent an enemy of going off the screen via the Y-axis
@@ -154,14 +165,30 @@ public class GameActivity extends AppCompatActivity {
 
     }
 
-    public void rotate_Clockwise(View view) {
-        //rotate animation stops after full circle, this does not
-        ObjectAnimator rotate = ObjectAnimator.ofFloat(view, "rotation", 180f, 0f);
-        rotate.setInterpolator(new LinearInterpolator());
-        rotate.setRepeatCount(-1);
-        //rotate.setFillAfter(true);
-        rotate.setDuration(8000);
-        rotate.start();
+    public void setRotation(View view){
+        view.animate().rotationBy(-360).withEndAction(new Runnable() {
+            @Override
+            public void run() {
+                // animation ends, so start again
+                view.animate().rotationBy(-360).withEndAction(this).setDuration(3000).setInterpolator(new LinearInterpolator()).start();
+            }
+        }).setDuration(3000).setInterpolator(new LinearInterpolator()).start();
     }
+
+    public void setScale(View view){
+        view.animate().scaleX(start).scaleY(start).withEndAction(new Runnable() {
+            @Override
+            public void run() {
+                // end of shrinking so enlarge again
+                view.animate().scaleX(end).scaleY(end).setDuration(1000).withEndAction(this).setInterpolator(new LinearInterpolator()).start();
+                if(end == 1){
+                    end = start;
+                } else {
+                    end = 1;
+                }
+            }
+        }).setDuration(1000).setInterpolator(new LinearInterpolator()).start();
+    }
+
 
 }

@@ -40,46 +40,46 @@
         android:id="@+id/imageViewGameCoin"
         android:layout_width="40dp"
         android:layout_height="40dp"
+        android:visibility="invisible"
         app:srcCompat="@drawable/coin"
         tools:layout_editor_absoluteX="627dp"
-        tools:layout_editor_absoluteY="16dp"
-        tools:visibility="invisible" />
+        tools:layout_editor_absoluteY="16dp" />
 
     <ImageView
         android:id="@+id/imageViewGameCoin2"
         android:layout_width="40dp"
         android:layout_height="40dp"
+        android:visibility="invisible"
         app:srcCompat="@drawable/coin"
         tools:layout_editor_absoluteX="627dp"
-        tools:layout_editor_absoluteY="60dp"
-        tools:visibility="invisible" />
+        tools:layout_editor_absoluteY="60dp" />
 
     <ImageView
         android:id="@+id/imageViewGameGerm"
-        android:layout_width="60dp"
+        android:layout_width="80dp"
         android:layout_height="60dp"
+        android:visibility="invisible"
         app:srcCompat="@drawable/germ1"
         tools:layout_editor_absoluteX="607dp"
-        tools:layout_editor_absoluteY="109dp"
-        tools:visibility="invisible" />
+        tools:layout_editor_absoluteY="109dp" />
 
     <ImageView
         android:id="@+id/imageViewGameMine"
         android:layout_width="45dp"
         android:layout_height="45dp"
+        android:visibility="invisible"
         app:srcCompat="@drawable/minesweeper_mine"
         tools:layout_editor_absoluteX="622dp"
-        tools:layout_editor_absoluteY="181dp"
-        tools:visibility="invisible" />
+        tools:layout_editor_absoluteY="181dp" />
 
     <ImageView
         android:id="@+id/imageViewGameWhirlwind"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:visibility="invisible"
         app:srcCompat="@drawable/whirlwind"
         tools:layout_editor_absoluteX="621dp"
-        tools:layout_editor_absoluteY="242dp"
-        tools:visibility="invisible" />
+        tools:layout_editor_absoluteY="242dp" />
 
     <ImageView
         android:id="@+id/imageViewGameCoinScore"

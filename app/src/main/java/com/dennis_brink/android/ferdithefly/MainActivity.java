@@ -3,12 +3,15 @@ package com.dennis_brink.android.ferdithefly;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
+import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 
 import java.sql.Array;
@@ -56,9 +59,24 @@ public class MainActivity extends AppCompatActivity {
         animation = AnimationUtils.loadAnimation(MainActivity.this,R.anim.scale_animation);
 
         for (String key : characters.keySet()) {
-            characters.get(key).setAnimation(animation);
+            if(key != "mine") {
+                characters.get(key).setAnimation(animation);
+            } else {
+                characters.get(key).setAnimation(animation);
+                rotate_Clockwise(characters.get(key));
+            }
         }
 
+    }
+
+    public void rotate_Clockwise(View view) {
+        //rotate animation stops after full circle, this does not
+        ObjectAnimator rotate = ObjectAnimator.ofFloat(view, "rotation", 180f, 0f);
+        rotate.setInterpolator(new LinearInterpolator());
+        rotate.setRepeatCount(-1);
+        //rotate.setFillAfter(true);
+        rotate.setDuration(15000);
+        rotate.start();
     }
 
     @Override
@@ -67,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         mediaPlayer = MediaPlayer.create(MainActivity.this, R.raw.getready3);
+        mediaPlayer.setLooping(true); // play the intro in a loop (hopefully)
         mediaPlayer.start();
 
         // volume button (mute or on)

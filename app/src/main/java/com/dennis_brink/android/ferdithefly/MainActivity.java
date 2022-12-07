@@ -74,7 +74,9 @@ public class MainActivity extends AppCompatActivity {
 
         super.onResume();
 
-        mediaPlayer = MediaPlayer.create(MainActivity.this, R.raw.getready3);
+        if(mediaPlayer==null) {
+            mediaPlayer = MediaPlayer.create(MainActivity.this, R.raw.getready3);
+        }
         mediaPlayer.setLooping(true); // play the intro in a loop (hopefully)
         mediaPlayer.start();
 

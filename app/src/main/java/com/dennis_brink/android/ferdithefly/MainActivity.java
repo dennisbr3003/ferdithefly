@@ -82,8 +82,8 @@ public class MainActivity extends AppCompatActivity {
         runnable = () -> {
             if (imageViewBat.getTag().equals("bat_1")){
                 imageViewBat.setImageResource(R.drawable.bat_2);
-                imageViewFerdi.setImageResource(R.drawable.ferdi_1a);
                 imageViewBat.setTag("bat_2");
+                imageViewFerdi.setImageResource(R.drawable.ferdi_1a);
                 imageViewFerdi.setTag("bat_2");
             } else {
                 imageViewBat.setImageResource(R.drawable.bat_1);

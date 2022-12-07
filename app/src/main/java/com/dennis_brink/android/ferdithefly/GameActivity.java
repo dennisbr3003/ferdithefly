@@ -7,6 +7,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
@@ -29,6 +30,9 @@ public class GameActivity extends AppCompatActivity {
     private Runnable runnableFerdi;
     private Handler handlerFerdi;
 
+    private Runnable runnableFerdiAnimation;
+    private Handler handlerFerdiAnimation;
+
     private Handler handlerFerdiExit;
     private Runnable runnableFerdiExit;
 
@@ -46,6 +50,10 @@ public class GameActivity extends AppCompatActivity {
     int lives = 3;
     int score = 0;
     int interval = 0;
+    int f_interval = 0;
+
+    boolean movementUp = false;
+    boolean movementExit = false;
 
     int gamespeed = 40;
     int ferdisensitivity = 75;
@@ -115,6 +123,24 @@ public class GameActivity extends AppCompatActivity {
                     evaluateGameStats();
                 };
                 handler.post(runnable);
+
+                // Ferdi animation
+                handlerFerdiAnimation = new Handler(); // bat animation
+                runnableFerdiAnimation = () -> {
+                    if (movementUp || movementExit) {
+                        if (imageViewGameFerdi.getTag().equals("bat_1")) {
+                            imageViewGameFerdi.setImageResource(R.drawable.ferdi_1a);
+                            imageViewGameFerdi.setTag("bat_2");
+                        } else {
+                            imageViewGameFerdi.setImageResource(R.drawable.ferdi_2a);
+                            imageViewGameFerdi.setTag("bat_1");
+                        }
+                    }
+                    handlerFerdiAnimation.postDelayed(runnableFerdiAnimation, 40);
+                };
+
+                handlerFerdiAnimation.post(runnableFerdiAnimation);
+
             } else { // screen is touched two or more times
                 if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){ // touchscreen event is now active
                     touchControl = true;
@@ -128,6 +154,7 @@ public class GameActivity extends AppCompatActivity {
 
     }
 
+
     public void moveFerdi(){
         // if the screen is touched the bird is going up
         // if the screen is released this bird is going down
@@ -136,9 +163,11 @@ public class GameActivity extends AppCompatActivity {
         if(touchControl){
             // up
             ferdiY = ferdiY - (screenWidth / 50);
+            movementUp = true;
         } else {
             // down
             ferdiY = ferdiY + (screenWidth / 50);
+            movementUp = false;
         }
 
         if(ferdiY <= 0){
@@ -245,6 +274,7 @@ public class GameActivity extends AppCompatActivity {
                 public void run() {
                     characterX = (int)imageViewGameFerdi.getX();
                     // Ferdi moves from left to right so +
+                    movementExit = true; // start animation of wings here
                     characterX = characterX + (screenWidth / 300);
                     imageViewGameFerdi.setX((float) characterX);
                     imageViewGameFerdi.setY((float) screenHeight/2);
@@ -252,6 +282,7 @@ public class GameActivity extends AppCompatActivity {
                         handlerFerdiExit.postDelayed(runnableFerdiExit, 20); // Ferdi is not there yet
                     } else { // Ferdi is off the screen so stop and show result
                         handlerFerdiExit.removeCallbacks(runnableFerdiExit);
+                        handlerFerdiAnimation.removeCallbacks(runnableFerdiAnimation);
                         startResult();
                     }
 

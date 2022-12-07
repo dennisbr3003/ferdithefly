@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -21,8 +22,8 @@ public class MainActivity extends AppCompatActivity {
     AppCompatButton btnStart;
 
     private Animation animation;
-    private MediaPlayer mediaPlayer;
-    private boolean media_playing = true;
+    //private MediaPlayer mediaPlayer;
+    //private boolean media_playing = true;
     HashMap<String, ImageView> characters = new HashMap<>();
 
     private Handler handler;
@@ -73,12 +74,19 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
 
         super.onResume();
-
+/*
         if(mediaPlayer==null) {
             mediaPlayer = MediaPlayer.create(MainActivity.this, R.raw.getready3);
         }
         mediaPlayer.setLooping(true); // play the intro in a loop (hopefully)
         mediaPlayer.start();
+*/
+        Log.d("DENNIS_B", "Start mediaplayer");
+        try {
+            Application.setupMediaPlayerTrack1(MainActivity.this);
+        } catch (Exception e){
+            Log.d("DENNIS_B", "Start mediaplayer error " + e.getLocalizedMessage());
+        }
 
         handler = new Handler(); // bat animation
         runnable = () -> {
@@ -100,21 +108,25 @@ public class MainActivity extends AppCompatActivity {
 
         // volume button (mute or on)
         imageViewVolume.setOnClickListener(view -> {
-            if(media_playing){
-                mediaPlayer.setVolume(0,0); // mute
+            //if(media_playing){
+            if(Application.mediaPlayerTrack1IsPlaying()){
+                //mediaPlayer.setVolume(0,0); // mute
+                Application.mediaPlayerTrack1Mute();
                 imageViewVolume.setImageResource(R.drawable.ic_baseline_volume_off_24);
-                media_playing = false;
+                //media_playing = false;
             } else {
-                mediaPlayer.setVolume(1,1); // un mute
+                //mediaPlayer.setVolume(1,1); // un mute
+                Application.mediaPlayerTrack1UnMute();
                 imageViewVolume.setImageResource(R.drawable.ic_baseline_volume_up_24);
-                media_playing = true;
+                //media_playing = true;
             }
         });
 
         btnStart.setOnClickListener(view -> {
 
             // close audio
-            mediaPlayer.reset();
+            //mediaPlayer.reset();
+            Application.mediaPlayerTrack1Stop();
             imageViewVolume.setImageResource(R.drawable.ic_baseline_volume_up_24);
             handler.removeCallbacks(runnable);
             // start game activity

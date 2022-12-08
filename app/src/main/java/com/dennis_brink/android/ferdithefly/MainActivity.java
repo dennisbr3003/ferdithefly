@@ -22,8 +22,8 @@ public class MainActivity extends AppCompatActivity {
     AppCompatButton btnStart;
 
     private Animation animation;
-    //private MediaPlayer mediaPlayer;
-    //private boolean media_playing = true;
+    private MediaPlayer mediaPlayer;
+    private boolean media_playing = true;
     HashMap<String, ImageView> characters = new HashMap<>();
 
     private Handler handler;

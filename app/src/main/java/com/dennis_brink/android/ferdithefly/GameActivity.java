@@ -21,6 +21,7 @@ public class GameActivity extends AppCompatActivity {
               imageViewGameCoin, imageViewGameCoin2, imageViewGameCoinScore;
     TextView textViewTabToPlay, textViewScore;
     ConstraintLayout constraintLayout;
+
     private boolean touchControl = false;
     private boolean beginControl = false;
 
@@ -33,12 +34,16 @@ public class GameActivity extends AppCompatActivity {
     private Runnable runnableFerdiAnimation;
     private Handler handlerFerdiAnimation;
 
+    private Runnable runnableBatAnimation;
+    private Handler handlerBatAnimation;
+
     private Handler handlerFerdiExit;
     private Runnable runnableFerdiExit;
 
     //private Animation animation;
     float start = 0.8f;
     float end = 1f;
+
     // XY coordinates Ferdi, and all the other characters
     int ferdiX, characterX;
     int ferdiY, characterY;
@@ -49,14 +54,16 @@ public class GameActivity extends AppCompatActivity {
 
     int lives = 3;
     int score = 0;
-    int interval = 0;
-    int f_interval = 0;
 
     boolean movementUp = false;
     boolean movementExit = false;
 
     int gamespeed = 40;
     int ferdisensitivity = 75;
+    int batanimationspeed = 80;
+    int ferdianimationspeed = 40;
+    int ferdiexitspeed = 20;
+    int ferdiexitinterval = 500;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -108,11 +115,11 @@ public class GameActivity extends AppCompatActivity {
                 handler = new Handler();
                 runnable = () -> {
 
-                    enemyControl(imageViewGameGerm, 160, "");
-                    enemyControl(imageViewGameMine, 180, "");
-                    enemyControl(imageViewGameCoin, 140, "");
-                    enemyControl(imageViewGameCoin2, 110, "");
-                    enemyControl(imageViewGameBat, 120, "animation");
+                    enemyControl(imageViewGameGerm, 160);
+                    enemyControl(imageViewGameMine, 180);
+                    enemyControl(imageViewGameCoin, 140);
+                    enemyControl(imageViewGameCoin2, 110);
+                    enemyControl(imageViewGameBat, 120);
 
                     collisionControl(imageViewGameGerm, "enemy");
                     collisionControl(imageViewGameMine, "enemy");
@@ -124,22 +131,8 @@ public class GameActivity extends AppCompatActivity {
                 };
                 handler.post(runnable);
 
-                // Ferdi animation
-                handlerFerdiAnimation = new Handler(); // bat animation
-                runnableFerdiAnimation = () -> {
-                    if (movementUp || movementExit) {
-                        if (imageViewGameFerdi.getTag().equals("bat_1")) {
-                            imageViewGameFerdi.setImageResource(R.drawable.ferdi_1a);
-                            imageViewGameFerdi.setTag("bat_2");
-                        } else {
-                            imageViewGameFerdi.setImageResource(R.drawable.ferdi_2a);
-                            imageViewGameFerdi.setTag("bat_1");
-                        }
-                    }
-                    handlerFerdiAnimation.postDelayed(runnableFerdiAnimation, 40);
-                };
-
-                handlerFerdiAnimation.post(runnableFerdiAnimation);
+                initBatAnimation();
+                initFerdiAnimation();
 
             } else { // screen is touched two or more times
                 if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){ // touchscreen event is now active
@@ -154,6 +147,41 @@ public class GameActivity extends AppCompatActivity {
 
     }
 
+    private void initBatAnimation(){
+
+        handlerBatAnimation = new Handler();
+        runnableBatAnimation = () -> {
+            if (imageViewGameBat.getTag().equals("bat_1")){
+                imageViewGameBat.setImageResource(R.drawable.bat_2);
+                imageViewGameBat.setTag("bat_2");
+            } else {
+                imageViewGameBat.setImageResource(R.drawable.bat_1);
+                imageViewGameBat.setTag("bat_1");
+            }
+            handlerBatAnimation.postDelayed(runnableBatAnimation, batanimationspeed);
+        };
+
+        handlerBatAnimation.post(runnableBatAnimation);
+    }
+
+    private void initFerdiAnimation(){
+
+        handlerFerdiAnimation = new Handler();
+        runnableFerdiAnimation = () -> {
+            if (movementUp || movementExit) {
+                if (imageViewGameFerdi.getTag().equals("bat_1")) {
+                    imageViewGameFerdi.setImageResource(R.drawable.ferdi_1a);
+                    imageViewGameFerdi.setTag("bat_2");
+                } else {
+                    imageViewGameFerdi.setImageResource(R.drawable.ferdi_2a);
+                    imageViewGameFerdi.setTag("bat_1");
+                }
+            }
+            handlerFerdiAnimation.postDelayed(runnableFerdiAnimation, ferdianimationspeed);
+        };
+
+        handlerFerdiAnimation.post(runnableFerdiAnimation);
+    }
 
     public void moveFerdi(){
         // if the screen is touched the bird is going up
@@ -180,7 +208,7 @@ public class GameActivity extends AppCompatActivity {
         imageViewGameFerdi.setY((float) ferdiY);
     }
 
-    public void enemyControl(ImageView character, int speed, String type){
+    public void enemyControl(ImageView character, int speed){
 
         character.setVisibility(View.VISIBLE);
 
@@ -200,22 +228,6 @@ public class GameActivity extends AppCompatActivity {
         }
         character.setX((float)characterX);
         character.setY((float)characterY);
-
-        // bat animation: use 2 times game speed for wings
-        if (type.equals("animation")){
-            interval += gamespeed;
-            if (interval == (2 * gamespeed)){
-                if (character.getTag().equals("bat_1")){
-                    character.setImageResource(R.drawable.bat_2);
-                    character.setTag("bat_2");
-                } else {
-                    character.setImageResource(R.drawable.bat_1);
-                    character.setTag("bat_1");
-                }
-                interval = 0;
-            }
-        }
-
     }
 
     public void setRotation(View view){
@@ -243,6 +255,29 @@ public class GameActivity extends AppCompatActivity {
         }).setDuration(1000).setInterpolator(new LinearInterpolator()).start();
     }
 
+    private void initFerdiExit(){
+
+        handlerFerdiExit = new Handler();
+
+        runnableFerdiExit = () -> {
+            characterX = (int)imageViewGameFerdi.getX();
+            // Ferdi moves from left to right so +
+            movementExit = true; // start animation of wings here
+            characterX = characterX + (screenWidth / ferdiexitinterval);
+            imageViewGameFerdi.setX((float) characterX);
+            imageViewGameFerdi.setY((float) screenHeight / 2);
+            if(imageViewGameFerdi.getX() <= screenWidth) {
+                handlerFerdiExit.postDelayed(runnableFerdiExit, ferdiexitspeed); // Ferdi is not there yet
+            } else { // Ferdi is off the screen so stop and show result
+                handlerFerdiExit.removeCallbacks(runnableFerdiExit);
+                handlerFerdiAnimation.removeCallbacks(runnableFerdiAnimation);
+                startResult();
+            }
+        };
+
+        handlerFerdiExit.post(runnableFerdiExit);
+    }
+
     public void evaluateGameStats(){
         if(lives > 0 && score < 200){
             if(lives == 2){
@@ -268,27 +303,7 @@ public class GameActivity extends AppCompatActivity {
             textViewTabToPlay.setVisibility(View.VISIBLE);
             textViewTabToPlay.setText("Congratulations! You won and Ferdi is safe...");
 
-            handlerFerdiExit = new Handler();
-            runnableFerdiExit = new Runnable() {
-                @Override
-                public void run() {
-                    characterX = (int)imageViewGameFerdi.getX();
-                    // Ferdi moves from left to right so +
-                    movementExit = true; // start animation of wings here
-                    characterX = characterX + (screenWidth / 300);
-                    imageViewGameFerdi.setX((float) characterX);
-                    imageViewGameFerdi.setY((float) screenHeight/2);
-                    if(imageViewGameFerdi.getX() <= screenWidth) {
-                        handlerFerdiExit.postDelayed(runnableFerdiExit, 20); // Ferdi is not there yet
-                    } else { // Ferdi is off the screen so stop and show result
-                        handlerFerdiExit.removeCallbacks(runnableFerdiExit);
-                        handlerFerdiAnimation.removeCallbacks(runnableFerdiAnimation);
-                        startResult();
-                    }
-
-                }
-            };
-            handlerFerdiExit.post(runnableFerdiExit);
+            initFerdiExit();
 
         } else if(lives==0){
             // loose: stop game

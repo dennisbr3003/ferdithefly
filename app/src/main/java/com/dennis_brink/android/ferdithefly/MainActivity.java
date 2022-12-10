@@ -3,6 +3,7 @@ package com.dennis_brink.android.ferdithefly;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -147,6 +148,22 @@ public class MainActivity extends AppCompatActivity {
         }).setDuration(3000).setInterpolator(new LinearInterpolator()).start();
     }
 
-
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Ferdi the Fly");
+        builder.setMessage("Are you sure you want to quit the game?");
+        builder.setCancelable(false);
+        builder.setNegativeButton("Quit game", (dialogInterface, i) -> {
+            moveTaskToBack(true);
+            android.os.Process.killProcess(android.os.Process.myPid());
+            System.exit(0);  //0 = close normally, any other value is close abnormally
+        });
+        builder.setPositiveButton("Back", (dialogInterface, i) -> {
+           dialogInterface.cancel();
+           return;
+        });
+        builder.create().show();
+    }
 
 }

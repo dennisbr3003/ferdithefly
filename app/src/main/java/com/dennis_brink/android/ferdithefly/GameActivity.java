@@ -7,7 +7,6 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
@@ -43,9 +42,6 @@ public class GameActivity extends AppCompatActivity {
 
     private Handler handlerFerdiExit;
     private Runnable runnableFerdiExit;
-
-    private Handler handlerExplosion;
-    private Runnable runnableExplosion;
 
     //private Animation animation;
     float start = 0.8f;
@@ -128,25 +124,10 @@ public class GameActivity extends AppCompatActivity {
                 handler = new Handler();
                 runnable = () -> {
 
-                    /*
-                    enemyControl(imageViewGameGerm, 160);
-                    enemyControl(imageViewGameMine, 180);
-                    enemyControl(imageViewGameCoin, 140);
-                    enemyControl(imageViewGameCoin2, 110);
-                    enemyControl(imageViewGameBat, 120);
-                    */
                     characterControl();
-                    /*
-                    collisionControl(imageViewGameGerm, "enemy");
-                    collisionControl(imageViewGameMine, "enemy");
-                    collisionControl(imageViewGameBat, "enemy");
-                    collisionControl(imageViewGameCoin, "reward");
-                    collisionControl(imageViewGameCoin2, "reward");
-                    */
-
                     characterCollisionHandler();
-
                     evaluateGameStats();
+
                 };
                 handler.post(runnable);
 
@@ -300,29 +281,7 @@ public class GameActivity extends AppCompatActivity {
 
         imageViewGameFerdi.setY((float) ferdiY);
     }
-/*
-    public void enemyControl(ImageView character, int speed){
 
-        character.setVisibility(View.VISIBLE);
-
-        characterX = (int)character.getX();
-        characterY = (int)character.getY();
-
-        characterX = characterX - (screenWidth / speed);
-        if(characterX <= 0){
-            characterX = screenWidth + 200; // set it back completely to the left plus an extra 200 to get completely off the screen
-            characterY = (int) Math.floor(Math.random() * screenHeight); // reset Y-axis position to a random coordinate (so it starts at a different height)
-            if(characterY <= 0){ // prevent an enemy of going off the screen via the Y-axis
-                characterY = 0;
-            }
-            if (characterY > (screenHeight - character.getHeight())){ // deduct the character's height or it will still go off the screen
-                characterY = (screenHeight - character.getHeight());
-            }
-        }
-        character.setX((float)characterX);
-        character.setY((float)characterY);
-    }
-*/
     public void setRotation(View view){
         view.animate().rotationBy(-360).withEndAction(new Runnable() {
             @Override
@@ -413,24 +372,24 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void adjustSpeed() {
-        if(score >= 100 ){
+        if(score >= 200 ){
             if(!increase_level[0]==true) {
                 Application.setupMediaPlayerTrack2(GameActivity.this, R.raw.speed_up);
                 increaseCharacterSpeed(20);
                 increase_level[0]=true;
             }
         }
-        if(score >= 200 ){
+        if(score >= 300 ){
             if(!increase_level[1]==true) {
                 Application.setupMediaPlayerTrack2(GameActivity.this, R.raw.speed_up);
                 increaseCharacterSpeed(20);
                 increase_level[1]=true;
             }
         }
-        if(score >= 300 ){
+        if(score >= 400 ){
             if(!increase_level[2]==true) {
                 Application.setupMediaPlayerTrack2(GameActivity.this, R.raw.speed_up);
-                increaseCharacterSpeed(15);
+                increaseCharacterSpeed(20);
                 increase_level[2]=true;
             }
         }
@@ -448,13 +407,7 @@ public class GameActivity extends AppCompatActivity {
         for (String key : characters.keySet()) {
             characters.get(key).getImageView().setVisibility(View.INVISIBLE);
         }
-        /*
-        imageViewGameGerm.setVisibility(View.INVISIBLE);
-        imageViewGameMine.setVisibility(View.INVISIBLE);
-        imageViewGameCoin.setVisibility(View.INVISIBLE);
-        imageViewGameCoin2.setVisibility(View.INVISIBLE);
-        imageViewGameBat.setVisibility(View.INVISIBLE);
-        */
+
     }
 
     private void increaseCharacterSpeed(int speed){
@@ -462,40 +415,9 @@ public class GameActivity extends AppCompatActivity {
         for (String key : characters.keySet()) {
             characters.get(key).increase_speed(speed);
         }
-        /*
-        imageViewGameGerm.setVisibility(View.INVISIBLE);
-        imageViewGameMine.setVisibility(View.INVISIBLE);
-        imageViewGameCoin.setVisibility(View.INVISIBLE);
-        imageViewGameCoin2.setVisibility(View.INVISIBLE);
-        imageViewGameBat.setVisibility(View.INVISIBLE);
-        */
+
     }
-
-/*
-    public void collisionControl(View view, String type){
-        int centreViewX = (int) (view.getX() + (view.getWidth() / 2));
-        int centreViewY = (int) (view.getY() + (view.getHeight() / 2));
-
-        if(centreViewX >= imageViewGameFerdi.getX() &&
-                centreViewX <= (imageViewGameFerdi.getX() + imageViewGameFerdi.getWidth()) &&
-                centreViewY >= imageViewGameFerdi.getY() &&
-                centreViewY <= (imageViewGameFerdi.getY() + imageViewGameFerdi.getHeight())){
-            // collision ferdi and enemy or coin is a fact, the center of the enemy or coin is in the hit box of Ferdi
-            // first move the enemy or coin of the screen
-            view.setX(screenWidth + 200);
-            // take a live
-            if (type.equals("enemy")) {
-                lives--;
-                // set one heart to grey
-            }
-            if (type.equals("reward")){
-                score += 50;
-                textViewScore.setText(""+score);
-            }
-
-        }
-    }
-*/
+    
     @Override
     public void onBackPressed() {
 

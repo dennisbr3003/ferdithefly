@@ -5,7 +5,6 @@ import androidx.appcompat.widget.AppCompatButton;
 
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -23,8 +22,6 @@ public class MainActivity extends AppCompatActivity {
     AppCompatButton btnStart;
 
     private Animation animation;
-    private MediaPlayer mediaPlayer;
-    private boolean media_playing = true;
     HashMap<String, ImageView> characters = new HashMap<>();
 
     private Handler handler;
@@ -52,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
         characters.put("ferdi", imageViewFerdi);
         characters.put("germ", imageViewGerm);
         characters.put("mine", imageViewMine);
-        characters.put("Bat", imageViewBat);
+        characters.put("bat", imageViewBat);
         characters.put("coin", imageViewCoin);
     }
 
@@ -75,16 +72,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
 
         super.onResume();
-/*
-        if(mediaPlayer==null) {
-            mediaPlayer = MediaPlayer.create(MainActivity.this, R.raw.getready3);
-        }
-        mediaPlayer.setLooping(true); // play the intro in a loop (hopefully)
-        mediaPlayer.start();
-*/
-        Log.d("DENNIS_B", "Start mediaplayer");
+
         try {
-            Application.setupMediaPlayerTrack1(MainActivity.this);
+            //AudioLibrary.mediaPlayerTrack1Stop();
+            AudioLibrary.setupMediaPlayerTrack1(MainActivity.this, R.raw.getready3);
         } catch (Exception e){
             Log.d("DENNIS_B", "Start mediaplayer error " + e.getLocalizedMessage());
         }
@@ -110,14 +101,14 @@ public class MainActivity extends AppCompatActivity {
         // volume button (mute or on)
         imageViewVolume.setOnClickListener(view -> {
             //if(media_playing){
-            if(Application.mediaPlayerTrack1IsPlaying()){
+            if(AudioLibrary.mediaPlayerTrack1IsPlaying()){
                 //mediaPlayer.setVolume(0,0); // mute
-                Application.mediaPlayerTrack1Mute();
+                AudioLibrary.mediaPlayerTrack1Mute();
                 imageViewVolume.setImageResource(R.drawable.ic_baseline_volume_off_24);
                 //media_playing = false;
             } else {
                 //mediaPlayer.setVolume(1,1); // un mute
-                Application.mediaPlayerTrack1UnMute();
+                AudioLibrary.mediaPlayerTrack1UnMute();
                 imageViewVolume.setImageResource(R.drawable.ic_baseline_volume_up_24);
                 //media_playing = true;
             }
@@ -127,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
 
             // close audio
             //mediaPlayer.reset();
-            Application.mediaPlayerTrack1Stop();
+            AudioLibrary.mediaPlayerTrack1Stop();
             imageViewVolume.setImageResource(R.drawable.ic_baseline_volume_up_24);
             handler.removeCallbacks(runnable);
             // start game activity

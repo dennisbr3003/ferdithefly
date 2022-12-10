@@ -168,15 +168,15 @@ public class GameActivity extends AppCompatActivity {
                 // take a live
                 if (characters.get(key).getType().equals("enemy")) {
                     if(key.equals("mine")){
-                        Application.setupMediaPlayerTrack3(GameActivity.this, R.raw.explosion);
+                        AudioLibrary.setupMediaPlayerTrack2(GameActivity.this, R.raw.explosion);
                     } else {
-                        Application.setupMediaPlayerTrack3(GameActivity.this, R.raw.collision4);
+                        AudioLibrary.setupMediaPlayerTrack2(GameActivity.this, R.raw.hit2_squish);
                     }
                     lives--;
                 }
                 if (characters.get(key).getType().equals("reward")){
-                    Application.setupMediaPlayerTrack4(GameActivity.this, R.raw.reward);
-                    score += 50;
+                    AudioLibrary.setupMediaPlayerTrack2(GameActivity.this, R.raw.reward);
+                    score += 10;
                     textViewScore.setText(""+score);
                 }
             }
@@ -214,8 +214,8 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void loadCharacters(){
-        characters.put("germ", new CharacterConfig(160, imageViewGameGerm, "enemy"));
-        characters.put("mine", new CharacterConfig(180, imageViewGameMine, "enemy"));
+        characters.put("germ", new CharacterConfig(150, imageViewGameGerm, "enemy"));
+        characters.put("mine", new CharacterConfig(130, imageViewGameMine, "enemy"));
         characters.put("coin_1", new CharacterConfig(140, imageViewGameCoin, "reward"));
         characters.put("coin_2", new CharacterConfig(110, imageViewGameCoin2, "reward"));
         characters.put("bat", new CharacterConfig(120, imageViewGameBat, "enemy"));
@@ -311,7 +311,7 @@ public class GameActivity extends AppCompatActivity {
 
         handlerFerdiExit = new Handler();
 
-        Application.setupMediaPlayerTrack2(GameActivity.this, R.raw.success);
+        AudioLibrary.setupMediaPlayerTrack2(GameActivity.this, R.raw.success);
 
         runnableFerdiExit = () -> {
             characterX = (int)imageViewGameFerdi.getX();
@@ -374,22 +374,22 @@ public class GameActivity extends AppCompatActivity {
     private void adjustSpeed() {
         if(score >= 200 ){
             if(!increase_level[0]==true) {
-                Application.setupMediaPlayerTrack2(GameActivity.this, R.raw.speed_up);
-                increaseCharacterSpeed(20);
+                AudioLibrary.setupMediaPlayerTrack2(GameActivity.this, R.raw.speed_up);
+                increaseCharacterSpeed(30);
                 increase_level[0]=true;
             }
         }
         if(score >= 300 ){
             if(!increase_level[1]==true) {
-                Application.setupMediaPlayerTrack2(GameActivity.this, R.raw.speed_up);
-                increaseCharacterSpeed(20);
+                AudioLibrary.setupMediaPlayerTrack2(GameActivity.this, R.raw.speed_up);
+                increaseCharacterSpeed(30);
                 increase_level[1]=true;
             }
         }
         if(score >= 400 ){
             if(!increase_level[2]==true) {
-                Application.setupMediaPlayerTrack2(GameActivity.this, R.raw.speed_up);
-                increaseCharacterSpeed(20);
+                AudioLibrary.setupMediaPlayerTrack2(GameActivity.this, R.raw.speed_up);
+                increaseCharacterSpeed(30);
                 increase_level[2]=true;
             }
         }
@@ -413,7 +413,9 @@ public class GameActivity extends AppCompatActivity {
     private void increaseCharacterSpeed(int speed){
 
         for (String key : characters.keySet()) {
-            characters.get(key).increase_speed(speed);
+            if(!characters.get(key).getType().equals("reward")) {
+                characters.get(key).increase_speed(speed);
+            }
         }
 
     }

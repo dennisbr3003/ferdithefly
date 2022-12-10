@@ -4,61 +4,70 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg001"
     tools:context=".ResultActivity">
 
     <TextView
         android:id="@+id/textViewResultInfo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="293dp"
+        android:layout_height="125dp"
+        android:layout_marginTop="15dp"
         android:text="Nice work"
+        android:textAlignment="center"
         android:textColor="#DD2C00"
         android:textSize="30sp"
-        app:layout_constraintBottom_toTopOf="@+id/textViewResultScore"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5" />
+        app:layout_constraintStart_toEndOf="@+id/imageViewTombStone"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textViewResultScore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:text="Your Score: 50"
         android:textColor="#DD2C00"
         android:textSize="30sp"
-        app:layout_constraintBottom_toTopOf="@+id/textViewResultHighScore"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewResultInfo"
-        app:layout_constraintVertical_bias="0.5" />
+        app:layout_constraintStart_toEndOf="@+id/imageViewTombStone"
+        app:layout_constraintTop_toBottomOf="@+id/textViewResultHighScore" />
 
     <TextView
         android:id="@+id/textViewResultHighScore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="7dp"
         android:text="High Score 200"
         android:textColor="#DD2C00"
         android:textSize="30sp"
-        app:layout_constraintBottom_toTopOf="@+id/btnResultPlayAgain"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewResultScore"
-        app:layout_constraintVertical_bias="0.5" />
+        app:layout_constraintStart_toEndOf="@+id/imageViewTombStone"
+        app:layout_constraintTop_toBottomOf="@+id/textViewResultInfo" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnResultPlayAgain"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="60dp"
-        android:layout_marginStart="200dp"
-        android:layout_marginEnd="200dp"
-        android:layout_marginBottom="75dp"
+        android:layout_marginTop="17dp"
         android:background="@drawable/button_result_background"
+        android:paddingStart="40dp"
+        android:paddingEnd="40dp"
         android:text="Play Again"
         android:textAllCaps="false"
         android:textColor="@android:color/holo_red_dark"
         android:textSize="30sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toEndOf="@+id/imageViewTombStone"
+        app:layout_constraintTop_toBottomOf="@+id/textViewResultScore" />
+
+    <ImageView
+        android:id="@+id/imageViewTombStone"
+        android:layout_width="350dp"
+        android:layout_height="350dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginBottom="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/rip" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

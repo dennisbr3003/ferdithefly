@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -39,17 +40,17 @@ public class ResultActivity extends AppCompatActivity {
 
         if(score >= 500){ // 200+ is win
             if(score >= highscore) {
-                textViewResultInfo.setText("You Win with a new HighScore!");
+                textViewResultInfo.setText("Ferdi lives! And you win with a new HighScore!");
                 textViewResultHighScore.setText("High Score: " + score);
                 sharedPreferences.edit().putInt("highscore", score).apply();
             }
         } else {
             if (score >= highscore){ // < 200 you died
-                textViewResultInfo.setText("You died; but with a new HighScore!");
+                textViewResultInfo.setText("Ferdi died; but with a new HighScore! Time to celebrate!");
                 textViewResultHighScore.setText("High Score: " + score);
                 sharedPreferences.edit().putInt("highscore", score).apply();
             } else {
-                textViewResultInfo.setText("You are not very good a this. Maybe you should consider a game change");
+                textViewResultInfo.setText("Ferdi died because of you! Maybe you should just..go away!");
                 textViewResultHighScore.setText("High Score: " + highscore);
             }
         }
@@ -60,5 +61,22 @@ public class ResultActivity extends AppCompatActivity {
             finish();
         });
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        try {
+            AudioLibrary.mediaPlayerTrack1Stop();
+            AudioLibrary.setupMediaPlayerTrack1(ResultActivity.this, R.raw.sinister);
+        } catch (Exception e){
+            Log.d("DENNIS_B", "Start mediaplayer error " + e.getLocalizedMessage());
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //AudioLibrary.mediaPlayerTrack1Stop();
     }
 }

@@ -7,6 +7,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
@@ -20,6 +21,7 @@ import java.util.HashMap;
 public class GameActivity extends AppCompatActivity {
 
     ImageView imageViewGameFerdi, imageViewGameGerm, imageViewGameMine, imageViewGameBat,
+              imageViewGameWasp,
               imageViewLive1, imageViewLive2, imageViewLive3,
               imageViewGameCoin, imageViewGameCoin2, imageViewGameCoinScore;
     TextView textViewTabToPlay, textViewScore;
@@ -39,6 +41,9 @@ public class GameActivity extends AppCompatActivity {
 
     private Runnable runnableBatAnimation;
     private Handler handlerBatAnimation;
+
+    private Runnable runnableWaspAnimation;
+    private Handler handlerWaspAnimation;
 
     private Handler handlerFerdiExit;
     private Runnable runnableFerdiExit;
@@ -66,6 +71,7 @@ public class GameActivity extends AppCompatActivity {
     int gamespeed = 40;
     int ferdisensitivity = 75;
     int batanimationspeed = 80;
+    int waspanimationspeed = 80;
     int ferdianimationspeed = 40;
     int ferdiexitspeed = 20;
     int ferdiexitinterval = 200;
@@ -83,6 +89,7 @@ public class GameActivity extends AppCompatActivity {
         imageViewGameGerm = findViewById(R.id.imageViewGameGerm);
         imageViewGameMine = findViewById(R.id.imageViewGameMine);
         imageViewGameBat = findViewById(R.id.imageViewGameBat);
+        imageViewGameWasp = findViewById(R.id.imageViewGameWasp);
         imageViewLive1 = findViewById(R.id.imageViewLive1);
         imageViewLive2 = findViewById(R.id.imageViewLive2);
         imageViewLive3 = findViewById(R.id.imageViewLive3);
@@ -105,7 +112,7 @@ public class GameActivity extends AppCompatActivity {
 
             if(!beginControl){  // screen = touched for the first time
                 beginControl = true;
-
+                AudioLibrary.setupMediaPlayerTrack3(GameActivity.this, R.raw.ingame);
                 screenWidth = (int)constraintLayout.getWidth();
                 screenHeight = (int) constraintLayout.getHeight();
 
@@ -133,6 +140,7 @@ public class GameActivity extends AppCompatActivity {
 
                 startBatAnimation();
                 startFerdiAnimation();
+                startWaspAnimation();
 
             } else { // screen is touched two or more times
                 if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){ // touchscreen event is now active
@@ -176,7 +184,7 @@ public class GameActivity extends AppCompatActivity {
                 }
                 if (characters.get(key).getType().equals("reward")){
                     AudioLibrary.setupMediaPlayerTrack2(GameActivity.this, R.raw.reward);
-                    score += 10;
+                    score += 50;
                     textViewScore.setText(""+score);
                 }
             }
@@ -219,6 +227,36 @@ public class GameActivity extends AppCompatActivity {
         characters.put("coin_1", new CharacterConfig(140, imageViewGameCoin, "reward"));
         characters.put("coin_2", new CharacterConfig(110, imageViewGameCoin2, "reward"));
         characters.put("bat", new CharacterConfig(120, imageViewGameBat, "enemy"));
+        characters.put("wasp", new CharacterConfig(125, imageViewGameWasp, "enemy"));
+    }
+
+    private void startWaspAnimation(){
+
+        handlerWaspAnimation = new Handler();
+        runnableWaspAnimation = () -> { // you start with b1
+            if (imageViewGameWasp.getTag().equals("b_1")){
+                imageViewGameWasp.setImageResource(R.drawable.b2);
+                imageViewGameWasp.setTag("b_2");
+            } else if(imageViewGameWasp.getTag().equals("b_2")) {
+                imageViewGameWasp.setImageResource(R.drawable.b3);
+                imageViewGameWasp.setTag("b_3");
+            } else if(imageViewGameWasp.getTag().equals("b_3")) {
+                imageViewGameWasp.setImageResource(R.drawable.b4);
+                imageViewGameWasp.setTag("b_4");
+            } else if(imageViewGameWasp.getTag().equals("b_4")) {
+                imageViewGameWasp.setImageResource(R.drawable.b5);
+                imageViewGameWasp.setTag("b_5");
+            } else if(imageViewGameWasp.getTag().equals("b_5")) {
+                imageViewGameWasp.setImageResource(R.drawable.b6);
+                imageViewGameWasp.setTag("b_6");
+            }else if(imageViewGameWasp.getTag().equals("b_6")) {
+                imageViewGameWasp.setImageResource(R.drawable.b1);
+                imageViewGameWasp.setTag("b_1");
+            }
+            handlerWaspAnimation.postDelayed(runnableWaspAnimation, waspanimationspeed);
+        };
+
+        handlerWaspAnimation.post(runnableWaspAnimation);
     }
 
     private void startBatAnimation(){
@@ -325,7 +363,7 @@ public class GameActivity extends AppCompatActivity {
             } else { // Ferdi is off the screen so stop and show result
                 handlerFerdiExit.removeCallbacks(runnableFerdiExit);
                 handlerFerdiAnimation.removeCallbacks(runnableFerdiAnimation);
-                startResult();
+                startResult("win");
             }
         };
 
@@ -346,10 +384,11 @@ public class GameActivity extends AppCompatActivity {
             handler.postDelayed(runnable, gamespeed);
         } else if(score >= 500) {
 
+            AudioLibrary.mediaPlayerTrack1Stop(); // stop background music
+
             // win: stop game
             handlerFerdi.removeCallbacks(runnableFerdi);
             handler.removeCallbacks(runnable);
-
             // set screen touch passive (Ferdi won't react anymore)
             constraintLayout.setEnabled(false);
 
@@ -364,10 +403,11 @@ public class GameActivity extends AppCompatActivity {
 
         } else if(lives==0){
             // loose: stop game
+            AudioLibrary.mediaPlayerTrack1Stop(); // stop background music
             handler.removeCallbacks(runnableFerdi);
             handler.removeCallbacks(runnable);
             imageViewLive3.setImageResource(R.drawable.ic_baseline_favorite_24_grey);
-            startResult();
+            startResult("loss");
         }
     }
 
@@ -395,9 +435,15 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-    public void startResult(){
+    public void startResult(String type){
+
+        Log.d("DENNIS_B", "stop mediaplayer background");
+        AudioLibrary.mediaPlayerTrack3Stop(); // stop background music
+        Log.d("DENNIS_B", "stopped mediaplayer background");
+
         Intent i = new Intent(GameActivity.this, ResultActivity.class);
         i.putExtra("score", score);
+        i.putExtra("type", type);
         startActivity(i);
         finish();
     }

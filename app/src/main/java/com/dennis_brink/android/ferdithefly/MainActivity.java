@@ -18,7 +18,8 @@ import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
-    ImageView imageViewFerdi, imageViewGerm, imageViewMine, imageViewBat, imageViewCoin, imageViewVolume;
+    ImageView imageViewFerdi, imageViewGerm, imageViewMine, imageViewBat,
+              imageViewCoin, imageViewVolume, imageViewWasp;
     AppCompatButton btnStart;
 
     private Animation animation;
@@ -26,6 +27,9 @@ public class MainActivity extends AppCompatActivity {
 
     private Handler handler;
     private Runnable runnable;
+
+    private Runnable runnableWaspAnimation;
+    private Handler handlerWaspAnimation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
         imageViewBat = findViewById(R.id.imageViewBat);
         imageViewCoin = findViewById(R.id.imageViewCoin);
         imageViewVolume = findViewById(R.id.imageViewVolume);
+        imageViewWasp = findViewById(R.id.imageViewWasp);
 
         loadCharacters();
         setCharacterAnimation();
@@ -51,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
         characters.put("mine", imageViewMine);
         characters.put("bat", imageViewBat);
         characters.put("coin", imageViewCoin);
+        characters.put("wasp", imageViewWasp);
     }
 
     private void setCharacterAnimation(){
@@ -80,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d("DENNIS_B", "Start mediaplayer error " + e.getLocalizedMessage());
         }
 
-        handler = new Handler(); // bat animation
+        handler = new Handler(); // bat/ferdi animation
         runnable = () -> {
             if (imageViewBat.getTag().equals("bat_1")){
                 imageViewBat.setImageResource(R.drawable.bat_2);
@@ -95,8 +101,9 @@ public class MainActivity extends AppCompatActivity {
             }
             handler.postDelayed(runnable, 80);
         };
-
         handler.post(runnable);
+
+        startWaspAnimation();
 
         // volume button (mute or on)
         imageViewVolume.setOnClickListener(view -> {
@@ -157,4 +164,32 @@ public class MainActivity extends AppCompatActivity {
         builder.create().show();
     }
 
+    private void startWaspAnimation(){
+
+        handlerWaspAnimation = new Handler();
+        runnableWaspAnimation = () -> { // you start with b1
+            if (imageViewWasp.getTag().equals("b_1")){
+                imageViewWasp.setImageResource(R.drawable.b2);
+                imageViewWasp.setTag("b_2");
+            } else if(imageViewWasp.getTag().equals("b_2")) {
+                imageViewWasp.setImageResource(R.drawable.b3);
+                imageViewWasp.setTag("b_3");
+            } else if(imageViewWasp.getTag().equals("b_3")) {
+                imageViewWasp.setImageResource(R.drawable.b4);
+                imageViewWasp.setTag("b_4");
+            } else if(imageViewWasp.getTag().equals("b_4")) {
+                imageViewWasp.setImageResource(R.drawable.b5);
+                imageViewWasp.setTag("b_5");
+            } else if(imageViewWasp.getTag().equals("b_5")) {
+                imageViewWasp.setImageResource(R.drawable.b6);
+                imageViewWasp.setTag("b_6");
+            }else if(imageViewWasp.getTag().equals("b_6")) {
+                imageViewWasp.setImageResource(R.drawable.b1);
+                imageViewWasp.setTag("b_1");
+            }
+            handlerWaspAnimation.postDelayed(runnableWaspAnimation, 80);
+        };
+
+        handlerWaspAnimation.post(runnableWaspAnimation);
+    }
 }

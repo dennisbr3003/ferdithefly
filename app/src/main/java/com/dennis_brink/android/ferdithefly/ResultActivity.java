@@ -16,7 +16,7 @@ import android.widget.TextView;
 public class ResultActivity extends AppCompatActivity {
 
     TextView textViewResultInfo, textViewResultScore, textViewResultHighScore;
-    ImageView imageViewEnd, imageViewWin;
+    ImageView imageViewEnd, imageViewWin, imageViewWinLoss;
     AppCompatButton btnAgain;
 
     int score;
@@ -35,6 +35,7 @@ public class ResultActivity extends AppCompatActivity {
 
         imageViewEnd = findViewById(R.id.imageViewTombStone);
         imageViewWin = findViewById(R.id.imageViewWin);
+        imageViewWinLoss = findViewById(R.id.imageViewTombStoneWin);
 
         btnAgain = findViewById(R.id.btnResultPlayAgain);
 
@@ -42,12 +43,6 @@ public class ResultActivity extends AppCompatActivity {
         type = getIntent().getStringExtra("type");
         if(type.equals("")){
             type = "loss";
-        }
-        if(type.equals("loss")){
-            imageViewEnd.setVisibility(View.VISIBLE);
-        }
-        if(type.equals("win")){
-           imageViewWin.setVisibility(View.VISIBLE);
         }
 
         textViewResultScore.setText("Your Score: " + score);
@@ -57,16 +52,20 @@ public class ResultActivity extends AppCompatActivity {
 
         if(score >= 500){ // 500+ is win
             if(score >= highscore) {
+                imageViewWin.setVisibility(View.VISIBLE);
                 textViewResultInfo.setText("Ferdi lives!\nHe's havin' a beer with his friends! Get one yourself, you earned it...");
                 textViewResultHighScore.setText("High Score: " + score);
                 sharedPreferences.edit().putInt("highscore", score).apply();
             }
         } else {
             if (score >= highscore){ // < 500 you died
-                textViewResultInfo.setText("Ferdi died; but that's ok because you have a new HighScore! Let's Celebrate!!");
+                imageViewWinLoss.setVisibility(View.VISIBLE);
+                textViewResultInfo.setText("Ferdi died; but that's ok because you have a new HighScore!\n LET'S CELEBRATE!");
+                type="win";
                 textViewResultHighScore.setText("High Score: " + score);
                 sharedPreferences.edit().putInt("highscore", score).apply();
             } else {
+                imageViewEnd.setVisibility(View.VISIBLE); // you died without an highscore
                 textViewResultInfo.setText("Ferdi died because of you! Maybe you should just..go away!");
                 textViewResultHighScore.setText("High Score: " + highscore);
             }

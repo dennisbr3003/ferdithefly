@@ -187,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
                 imageViewWasp.setImageResource(R.drawable.b1);
                 imageViewWasp.setTag("b_1");
             }
-            handlerWaspAnimation.postDelayed(runnableWaspAnimation, 80);
+            handlerWaspAnimation.postDelayed(runnableWaspAnimation, 100);
         };
 
         handlerWaspAnimation.post(runnableWaspAnimation);

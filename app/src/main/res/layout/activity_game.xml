@@ -78,6 +78,16 @@
         tools:layout_editor_absoluteY="181dp" />
 
     <ImageView
+        android:id="@+id/imageViewGameMine2"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:tag="mine"
+        android:visibility="invisible"
+        app:srcCompat="@drawable/minesweeper_mine"
+        tools:layout_editor_absoluteX="622dp"
+        tools:layout_editor_absoluteY="181dp" />
+
+    <ImageView
         android:id="@+id/imageViewGameBat"
         android:layout_width="60dp"
         android:layout_height="60dp"

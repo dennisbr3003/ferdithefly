@@ -21,7 +21,7 @@ import java.util.HashMap;
 public class GameActivity extends AppCompatActivity {
 
     ImageView imageViewGameFerdi, imageViewGameGerm, imageViewGameMine, imageViewGameBat,
-              imageViewGameWasp,
+              imageViewGameMine2, imageViewGameWasp,
               imageViewLive1, imageViewLive2, imageViewLive3,
               imageViewGameCoin, imageViewGameCoin2, imageViewGameCoinScore;
     TextView textViewTabToPlay, textViewScore;
@@ -88,6 +88,7 @@ public class GameActivity extends AppCompatActivity {
         imageViewGameFerdi = findViewById(R.id.imageViewGameFerdi);
         imageViewGameGerm = findViewById(R.id.imageViewGameGerm);
         imageViewGameMine = findViewById(R.id.imageViewGameMine);
+        imageViewGameMine2 = findViewById(R.id.imageViewGameMine2);
         imageViewGameBat = findViewById(R.id.imageViewGameBat);
         imageViewGameWasp = findViewById(R.id.imageViewGameWasp);
         imageViewLive1 = findViewById(R.id.imageViewLive1);
@@ -101,6 +102,7 @@ public class GameActivity extends AppCompatActivity {
         textViewScore = findViewById(R.id.textViewScore);
 
         setRotation(imageViewGameMine); // the mine should rotate
+        setRotation(imageViewGameMine2); // this mine is not visible yet (will be at 300 pts)
         setScale(imageViewGameGerm); // the germ should pulse
 
         constraintLayout = findViewById(R.id.constraintLayout);
@@ -175,7 +177,7 @@ public class GameActivity extends AppCompatActivity {
                 character.setX(screenWidth + 200);
                 // take a live
                 if (characters.get(key).getType().equals("enemy")) {
-                    if(key.equals("mine")){
+                    if(key.equals("mine") || key.equals("mine2")){
                         AudioLibrary.setupMediaPlayerTrack2(GameActivity.this, R.raw.explosion);
                     } else {
                         AudioLibrary.setupMediaPlayerTrack2(GameActivity.this, R.raw.hit2_squish);
@@ -184,7 +186,7 @@ public class GameActivity extends AppCompatActivity {
                 }
                 if (characters.get(key).getType().equals("reward")){
                     AudioLibrary.setupMediaPlayerTrack2(GameActivity.this, R.raw.reward);
-                    score += 50;
+                    score += 10;
                     textViewScore.setText(""+score);
                 }
             }
@@ -422,6 +424,8 @@ public class GameActivity extends AppCompatActivity {
         if(score >= 300 ){
             if(!increase_level[1]==true) {
                 AudioLibrary.setupMediaPlayerTrack2(GameActivity.this, R.raw.speed_up);
+                // add the new extra mine to the game
+                characters.put("mine2", new CharacterConfig(115, imageViewGameMine2, "enemy")); // next it will add immediately 30 so 115 will be good
                 increaseCharacterSpeed(30);
                 increase_level[1]=true;
             }

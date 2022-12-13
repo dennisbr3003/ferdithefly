@@ -9,6 +9,9 @@ public class AudioLibrary extends android.app.Application {
     private static MediaPlayer mediaPlayerTrack1;
     private static MediaPlayer mediaPlayerTrack3;
     private static boolean track1MediaPlaying = false;
+    private static MediaPlayer mediaPlayerMainActivity;
+    private static boolean mediaPlayerMainActivityPlaying = false;
+    private static boolean mediaPlayerMainActivityMuted = false;
 
     @Override
     public void onCreate() {
@@ -30,6 +33,39 @@ public class AudioLibrary extends android.app.Application {
         mediaPlayerTrack1 = MediaPlayer.create(activity_context, resource);
         mediaPlayerTrack1.setLooping(true); // play the intro in
         mediaPlayerTrack1.start();
+    }
+
+    public static void mediaPlayerMainActivity(Context activity_context, int resource) {
+
+        if(mediaPlayerMainActivity!=null) {
+            if (mediaPlayerMainActivity.isPlaying() || mediaPlayerMainActivity.isLooping()) {
+                mediaPlayerMainActivity.reset(); // if sound already playing then set back to 0 (cut off playing sound ad start new one)
+            }
+        }
+        mediaPlayerMainActivity = MediaPlayer.create(activity_context, resource);
+        mediaPlayerMainActivity.setLooping(true); // play the intro in
+        if(mediaPlayerMainActivityMuted) {
+            mediaPlayerMainActivityMute();
+        }
+        mediaPlayerMainActivity.start();
+        mediaPlayerMainActivityPlaying = true;
+    }
+
+    public static void mediaPlayerMainActivityMute(){
+        mediaPlayerMainActivity.setVolume(0,0); // mute
+        mediaPlayerMainActivityMuted = true;
+        mediaPlayerMainActivityPlaying = false;
+    }
+
+    public static void mediaPlayerMainActivityUnMute(){
+        mediaPlayerMainActivity.setVolume(1,1); // mute
+        mediaPlayerMainActivityMuted = false;
+        mediaPlayerMainActivityPlaying = true;
+    }
+
+    public static void mediaPlayerMainActivityStop(){
+        mediaPlayerMainActivity.reset(); // mute
+        mediaPlayerMainActivityPlaying = false;
     }
 
     public static void setupMediaPlayerTrack3(Context activity_context, int resource) {
@@ -67,6 +103,13 @@ public class AudioLibrary extends android.app.Application {
 
     public static boolean mediaPlayerTrack1IsPlaying(){
         return track1MediaPlaying;
+    }
+    public static boolean mediaPlayerMainActivityIsPlaying(){
+        return mediaPlayerMainActivityPlaying;
+    }
+
+    public static boolean mediaPlayerMainActivityIsMuted(){
+        return mediaPlayerMainActivityMuted;
     }
 
     // in-game sound-effects that do not need to loop

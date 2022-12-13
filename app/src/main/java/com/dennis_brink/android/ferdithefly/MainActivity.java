@@ -16,14 +16,14 @@ import android.widget.ImageView;
 
 import java.util.HashMap;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements IConstants {
 
     ImageView imageViewFerdi, imageViewGerm, imageViewMine, imageViewBat,
               imageViewCoin, imageViewVolume, imageViewWasp;
     AppCompatButton btnStart;
 
     private Animation animation;
-    HashMap<String, ImageView> characters = new HashMap<>();
+    HashMap<characterKey, ImageView> characters = new HashMap<>();
 
     private Handler handler;
     private Runnable runnable;
@@ -51,20 +51,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadCharacters(){
-        characters.put("ferdi", imageViewFerdi);
-        characters.put("germ", imageViewGerm);
-        characters.put("mine", imageViewMine);
-        characters.put("bat", imageViewBat);
-        characters.put("coin", imageViewCoin);
-        characters.put("wasp", imageViewWasp);
+        characters.put(characterKey.FERDI, imageViewFerdi);
+        characters.put(characterKey.GERM, imageViewGerm);
+        characters.put(characterKey.MINE, imageViewMine);
+        characters.put(characterKey.BAT, imageViewBat);
+        characters.put(characterKey.COIN, imageViewCoin);
+        characters.put(characterKey.WASP, imageViewWasp);
     }
 
     private void setCharacterAnimation(){
 
         animation = AnimationUtils.loadAnimation(MainActivity.this,R.anim.scale_animation);
 
-        for (String key : characters.keySet()) {
-            if(key != "mine") {
+        for (characterKey key : characters.keySet()) {
+            if(key != characterKey.MINE) {
                 characters.get(key).setAnimation(animation);
             } else {
                 characters.get(key).setAnimation(animation);
@@ -81,9 +81,10 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             //AudioLibrary.mediaPlayerTrack1Stop();
-            AudioLibrary.setupMediaPlayerTrack1(MainActivity.this, R.raw.getready3);
+            //AudioLibrary.setupMediaPlayerTrack1(MainActivity.this, R.raw.getready3);
+            AudioLibrary.mediaPlayerMainActivity(MainActivity.this, R.raw.getready3);
         } catch (Exception e){
-            Log.d("DENNIS_B", "Start mediaplayer error " + e.getLocalizedMessage());
+            Log.d(TAG, "Start mediaplayer error " + e.getLocalizedMessage());
         }
 
         handler = new Handler(); // bat/ferdi animation
@@ -108,14 +109,18 @@ public class MainActivity extends AppCompatActivity {
         // volume button (mute or on)
         imageViewVolume.setOnClickListener(view -> {
             //if(media_playing){
-            if(AudioLibrary.mediaPlayerTrack1IsPlaying()){
+            //if(AudioLibrary.mediaPlayerTrack1IsPlaying()){
+            //if(AudioLibrary.mediaPlayerMainActivityIsPlaying()){
+            if(!AudioLibrary.mediaPlayerMainActivityIsMuted()){
                 //mediaPlayer.setVolume(0,0); // mute
-                AudioLibrary.mediaPlayerTrack1Mute();
+                //AudioLibrary.mediaPlayerTrack1Mute();
+                AudioLibrary.mediaPlayerMainActivityMute();
                 imageViewVolume.setImageResource(R.drawable.ic_baseline_volume_off_24);
                 //media_playing = false;
             } else {
                 //mediaPlayer.setVolume(1,1); // un mute
-                AudioLibrary.mediaPlayerTrack1UnMute();
+                //AudioLibrary.mediaPlayerTrack1UnMute();
+                AudioLibrary.mediaPlayerMainActivityUnMute();
                 imageViewVolume.setImageResource(R.drawable.ic_baseline_volume_up_24);
                 //media_playing = true;
             }
@@ -125,9 +130,12 @@ public class MainActivity extends AppCompatActivity {
 
             // close audio
             //mediaPlayer.reset();
-            AudioLibrary.mediaPlayerTrack1Stop();
+            //AudioLibrary.mediaPlayerTrack1Stop();
+            AudioLibrary.mediaPlayerMainActivityStop();
             imageViewVolume.setImageResource(R.drawable.ic_baseline_volume_up_24);
+            // stop all threads
             handler.removeCallbacks(runnable);
+            handlerWaspAnimation.removeCallbacks(runnableWaspAnimation);
             // start game activity
             Intent i = new Intent(MainActivity.this, GameActivity.class);
             startActivity(i);
@@ -147,17 +155,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onPause() {
+        AudioLibrary.mediaPlayerMainActivityStop();
+        handler.removeCallbacks(runnable);
+        handlerWaspAnimation.removeCallbacks(runnableWaspAnimation);
+        super.onPause();
+    }
+
+    @Override
     public void onBackPressed() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("Ferdi the Fly");
-        builder.setMessage("Are you sure you want to quit the game?");
+        builder.setTitle(R.string.app_name);
+        builder.setMessage(R.string._quit);
         builder.setCancelable(false);
-        builder.setNegativeButton("Quit game", (dialogInterface, i) -> {
+        builder.setNegativeButton(R.string._btnquit, (dialogInterface, i) -> {
             moveTaskToBack(true);
             android.os.Process.killProcess(android.os.Process.myPid());
             System.exit(0);  //0 = close normally, any other value is close abnormally
         });
-        builder.setPositiveButton("Back", (dialogInterface, i) -> {
+        builder.setPositiveButton(R.string._btncancel, (dialogInterface, i) -> {
            dialogInterface.cancel();
            return;
         });

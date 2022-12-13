@@ -15,6 +15,7 @@ import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements IConstants {
 
@@ -22,7 +23,6 @@ public class MainActivity extends AppCompatActivity implements IConstants {
               imageViewCoin, imageViewVolume, imageViewWasp;
     AppCompatButton btnStart;
 
-    private Animation animation;
     HashMap<characterKey, ImageView> characters = new HashMap<>();
 
     private Handler handler;
@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements IConstants {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -61,13 +62,14 @@ public class MainActivity extends AppCompatActivity implements IConstants {
 
     private void setCharacterAnimation(){
 
+        Animation animation;
         animation = AnimationUtils.loadAnimation(MainActivity.this,R.anim.scale_animation);
 
         for (characterKey key : characters.keySet()) {
             if(key != characterKey.MINE) {
-                characters.get(key).setAnimation(animation);
+                Objects.requireNonNull(characters.get(key)).setAnimation(animation);
             } else {
-                characters.get(key).setAnimation(animation);
+                Objects.requireNonNull(characters.get(key)).setAnimation(animation);
                 setRotation(imageViewMine);
             }
         }
@@ -80,66 +82,30 @@ public class MainActivity extends AppCompatActivity implements IConstants {
         super.onResume();
 
         try {
-            //AudioLibrary.mediaPlayerTrack1Stop();
-            //AudioLibrary.setupMediaPlayerTrack1(MainActivity.this, R.raw.getready3);
             AudioLibrary.mediaPlayerMainActivity(MainActivity.this, R.raw.getready3);
         } catch (Exception e){
-            Log.d(TAG, "Start mediaplayer error " + e.getLocalizedMessage());
+            Log.d(TAG, "Media player error on startup " + e.getLocalizedMessage());
         }
 
-        handler = new Handler(); // bat/ferdi animation
-        runnable = () -> {
-            if (imageViewBat.getTag().equals("bat_1")){
-                imageViewBat.setImageResource(R.drawable.bat_2);
-                imageViewBat.setTag("bat_2");
-                imageViewFerdi.setImageResource(R.drawable.ferdi_1a);
-                imageViewFerdi.setTag("bat_2");
-            } else {
-                imageViewBat.setImageResource(R.drawable.bat_1);
-                imageViewBat.setTag("bat_1");
-                imageViewFerdi.setImageResource(R.drawable.ferdi_2a);
-                imageViewFerdi.setTag("bat_1");
-            }
-            handler.postDelayed(runnable, 80);
-        };
-        handler.post(runnable);
-
+        startFerdiAndBatAnimation();
         startWaspAnimation();
 
         // volume button (mute or on)
         imageViewVolume.setOnClickListener(view -> {
-            //if(media_playing){
-            //if(AudioLibrary.mediaPlayerTrack1IsPlaying()){
-            //if(AudioLibrary.mediaPlayerMainActivityIsPlaying()){
             if(!AudioLibrary.mediaPlayerMainActivityIsMuted()){
-                //mediaPlayer.setVolume(0,0); // mute
-                //AudioLibrary.mediaPlayerTrack1Mute();
                 AudioLibrary.mediaPlayerMainActivityMute();
                 imageViewVolume.setImageResource(R.drawable.ic_baseline_volume_off_24);
-                //media_playing = false;
             } else {
-                //mediaPlayer.setVolume(1,1); // un mute
-                //AudioLibrary.mediaPlayerTrack1UnMute();
                 AudioLibrary.mediaPlayerMainActivityUnMute();
                 imageViewVolume.setImageResource(R.drawable.ic_baseline_volume_up_24);
-                //media_playing = true;
             }
         });
 
+        // game
         btnStart.setOnClickListener(view -> {
-
-            // close audio
-            //mediaPlayer.reset();
-            //AudioLibrary.mediaPlayerTrack1Stop();
-            AudioLibrary.mediaPlayerMainActivityStop();
-            imageViewVolume.setImageResource(R.drawable.ic_baseline_volume_up_24);
-            // stop all threads
-            handler.removeCallbacks(runnable);
-            handlerWaspAnimation.removeCallbacks(runnableWaspAnimation);
-            // start game activity
+            stopActivityAudioAndAnimation();
             Intent i = new Intent(MainActivity.this, GameActivity.class);
             startActivity(i);
-
         });
 
     }
@@ -156,10 +122,14 @@ public class MainActivity extends AppCompatActivity implements IConstants {
 
     @Override
     protected void onPause() {
-        AudioLibrary.mediaPlayerMainActivityStop();
+        stopActivityAudioAndAnimation();
+        super.onPause();
+    }
+
+    private void stopActivityAudioAndAnimation(){
+        AudioLibrary.mediaPlayerMainActivityStop(); // mute switch is preserved
         handler.removeCallbacks(runnable);
         handlerWaspAnimation.removeCallbacks(runnableWaspAnimation);
-        super.onPause();
     }
 
     @Override
@@ -171,17 +141,32 @@ public class MainActivity extends AppCompatActivity implements IConstants {
         builder.setNegativeButton(R.string._btnquit, (dialogInterface, i) -> {
             moveTaskToBack(true);
             android.os.Process.killProcess(android.os.Process.myPid());
-            System.exit(0);  //0 = close normally, any other value is close abnormally
+            System.exit(0);  // 0 = close normally, any other value is close abnormally
         });
-        builder.setPositiveButton(R.string._btncancel, (dialogInterface, i) -> {
-           dialogInterface.cancel();
-           return;
-        });
+        builder.setPositiveButton(R.string._btncancel, (dialogInterface, i) -> dialogInterface.cancel());
         builder.create().show();
     }
 
-    private void startWaspAnimation(){
+    private void startFerdiAndBatAnimation(){
+        handler = new Handler(); // bat/ferdi animation
+        runnable = () -> {
+            if (imageViewBat.getTag().equals("bat_1")){
+                imageViewBat.setImageResource(R.drawable.bat_2);
+                imageViewBat.setTag("bat_2");
+                imageViewFerdi.setImageResource(R.drawable.ferdi_1a);
+                imageViewFerdi.setTag("bat_2");
+            } else {
+                imageViewBat.setImageResource(R.drawable.bat_1);
+                imageViewBat.setTag("bat_1");
+                imageViewFerdi.setImageResource(R.drawable.ferdi_2a);
+                imageViewFerdi.setTag("bat_1");
+            }
+            handler.postDelayed(runnable, 80);
+        };
+        handler.post(runnable);
+    }
 
+    private void startWaspAnimation(){
         handlerWaspAnimation = new Handler();
         runnableWaspAnimation = () -> { // you start with b1
             if (imageViewWasp.getTag().equals("b_1")){
@@ -205,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements IConstants {
             }
             handlerWaspAnimation.postDelayed(runnableWaspAnimation, 100);
         };
-
         handlerWaspAnimation.post(runnableWaspAnimation);
     }
+
 }

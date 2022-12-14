@@ -18,7 +18,7 @@ import com.dennis_brink.android.ferdithefly.models.CharacterConfig;
 
 import java.util.HashMap;
 
-public class GameActivity extends AppCompatActivity {
+public class GameActivity extends AppCompatActivity implements IConstants {
 
     ImageView imageViewGameFerdi, imageViewGameGerm, imageViewGameMine, imageViewGameBat,
               imageViewGameMine2, imageViewGameWasp,
@@ -76,7 +76,7 @@ public class GameActivity extends AppCompatActivity {
     int ferdiexitspeed = 20;
     int ferdiexitinterval = 200;
 
-    HashMap<String, CharacterConfig> characters = new HashMap<>();
+    HashMap<characterKey, CharacterConfig> characters = new HashMap<>();
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -114,7 +114,8 @@ public class GameActivity extends AppCompatActivity {
 
             if(!beginControl){  // screen = touched for the first time
                 beginControl = true;
-                AudioLibrary.setupMediaPlayerTrack3(GameActivity.this, R.raw.ingame);
+                //AudioLibrary.setupMediaPlayerTrack3(GameActivity.this, R.raw.ingame);
+                AudioLibrary.mediaPlayerGameActivityBackground(GameActivity.this, R.raw.ingame);
                 screenWidth = (int)constraintLayout.getWidth();
                 screenHeight = (int) constraintLayout.getHeight();
 
@@ -161,7 +162,7 @@ public class GameActivity extends AppCompatActivity {
 
         ImageView character = null;
 
-        for (String key : characters.keySet()) {
+        for (characterKey key : characters.keySet()) {
 
             character = characters.get(key).getImageView();
             int centreViewX = (int) (character.getX() + (character.getWidth() / 2));
@@ -176,15 +177,15 @@ public class GameActivity extends AppCompatActivity {
                 // first move the enemy or coin of the screen
                 character.setX(screenWidth + 200);
                 // take a live
-                if (characters.get(key).getType().equals("enemy")) {
-                    if(key.equals("mine") || key.equals("mine2")){
+                if (characters.get(key).getType().equals(characterType.ENEMY)) {
+                    if(key.equals(characterKey.MINE) || key.equals(characterKey.MINE2)){
                         AudioLibrary.setupMediaPlayerTrack2(GameActivity.this, R.raw.explosion);
                     } else {
                         AudioLibrary.setupMediaPlayerTrack2(GameActivity.this, R.raw.hit2_squish);
                     }
                     lives--;
                 }
-                if (characters.get(key).getType().equals("reward")){
+                if (characters.get(key).getType().equals(characterType.REWARD)){
                     AudioLibrary.setupMediaPlayerTrack2(GameActivity.this, R.raw.reward);
                     score += 10;
                     textViewScore.setText(""+score);
@@ -198,7 +199,7 @@ public class GameActivity extends AppCompatActivity {
 
         ImageView character = null;
 
-        for (String key : characters.keySet()) {
+        for (characterKey key : characters.keySet()) {
 
             character = characters.get(key).getImageView();
             character.setVisibility(View.VISIBLE);
@@ -224,12 +225,12 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void loadCharacters(){
-        characters.put("germ", new CharacterConfig(150, imageViewGameGerm, "enemy"));
-        characters.put("mine", new CharacterConfig(130, imageViewGameMine, "enemy"));
-        characters.put("coin_1", new CharacterConfig(140, imageViewGameCoin, "reward"));
-        characters.put("coin_2", new CharacterConfig(110, imageViewGameCoin2, "reward"));
-        characters.put("bat", new CharacterConfig(120, imageViewGameBat, "enemy"));
-        characters.put("wasp", new CharacterConfig(125, imageViewGameWasp, "enemy"));
+        characters.put(characterKey.GERM, new CharacterConfig(150, imageViewGameGerm, characterType.ENEMY));
+        characters.put(characterKey.MINE, new CharacterConfig(130, imageViewGameMine, characterType.ENEMY));
+        characters.put(characterKey.COIN, new CharacterConfig(140, imageViewGameCoin, characterType.REWARD));
+        characters.put(characterKey.COIN2, new CharacterConfig(110, imageViewGameCoin2, characterType.REWARD));
+        characters.put(characterKey.BAT, new CharacterConfig(120, imageViewGameBat, characterType.ENEMY));
+        characters.put(characterKey.WASP, new CharacterConfig(125, imageViewGameWasp, characterType.ENEMY));
     }
 
     private void startWaspAnimation(){
@@ -425,7 +426,9 @@ public class GameActivity extends AppCompatActivity {
             if(!increase_level[1]==true) {
                 AudioLibrary.setupMediaPlayerTrack2(GameActivity.this, R.raw.speed_up);
                 // add the new extra mine to the game
-                characters.put("mine2", new CharacterConfig(115, imageViewGameMine2, "enemy")); // next it will add immediately 30 so 115 will be good
+                // next it will add  30 speed immediately so 115 will be good to start with
+                characters.put(characterKey.MINE2,
+                        new CharacterConfig(115, imageViewGameMine2, characterType.ENEMY));
                 increaseCharacterSpeed(30);
                 increase_level[1]=true;
             }
@@ -441,9 +444,9 @@ public class GameActivity extends AppCompatActivity {
 
     public void startResult(String type){
 
-        Log.d("DENNIS_B", "stop mediaplayer background");
-        AudioLibrary.mediaPlayerTrack3Stop(); // stop background music
-        Log.d("DENNIS_B", "stopped mediaplayer background");
+        Log.d("DENNIS_B", "stop media player background");
+        AudioLibrary.mediaPlayerGameActivityBackgroundStop(); // stop background music
+        Log.d("DENNIS_B", "stopped media player background");
 
         Intent i = new Intent(GameActivity.this, ResultActivity.class);
         i.putExtra("score", score);
@@ -454,7 +457,7 @@ public class GameActivity extends AppCompatActivity {
 
     private void hideAllCharactersButFerdi(){
 
-        for (String key : characters.keySet()) {
+        for (characterKey key : characters.keySet()) {
             characters.get(key).getImageView().setVisibility(View.INVISIBLE);
         }
 
@@ -462,8 +465,8 @@ public class GameActivity extends AppCompatActivity {
 
     private void increaseCharacterSpeed(int speed){
 
-        for (String key : characters.keySet()) {
-            if(!characters.get(key).getType().equals("reward")) {
+        for (characterKey key : characters.keySet()) {
+            if(!characters.get(key).getType().equals(characterType.REWARD)) {
                 characters.get(key).increase_speed(speed);
             }
         }

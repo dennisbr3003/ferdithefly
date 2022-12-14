@@ -10,8 +10,11 @@ public class AudioLibrary extends android.app.Application {
     private static MediaPlayer mediaPlayerTrack3;
     private static boolean track1MediaPlaying = false;
     private static MediaPlayer mediaPlayerMainActivity;
+    private static MediaPlayer mediaPlayerResultActivity;
     private static boolean mediaPlayerMainActivityPlaying = false;
     private static boolean mediaPlayerMainActivityMuted = false;
+
+    private static MediaPlayer mediaPlayerGameActivity;
 
     @Override
     public void onCreate() {
@@ -24,7 +27,6 @@ public class AudioLibrary extends android.app.Application {
     }
 
     public static void setupMediaPlayerTrack1(Context activity_context, int resource) {
-
         if(mediaPlayerTrack1!=null) {
             if (mediaPlayerTrack1.isPlaying() || mediaPlayerTrack1.isLooping()) {
                 mediaPlayerTrack1.reset(); // if sound already playing then set back to 0 (cut off playing sound ad start new one)
@@ -35,8 +37,9 @@ public class AudioLibrary extends android.app.Application {
         mediaPlayerTrack1.start();
     }
 
-    public static void mediaPlayerMainActivity(Context activity_context, int resource) {
+    //-- background music score start screen -------------------------------------------------------
 
+    public static void mediaPlayerMainActivity(Context activity_context, int resource) {
         if(mediaPlayerMainActivity!=null) {
             if (mediaPlayerMainActivity.isPlaying() || mediaPlayerMainActivity.isLooping()) {
                 mediaPlayerMainActivity.reset(); // if sound already playing then set back to 0 (cut off playing sound ad start new one)
@@ -58,7 +61,7 @@ public class AudioLibrary extends android.app.Application {
     }
 
     public static void mediaPlayerMainActivityUnMute(){
-        mediaPlayerMainActivity.setVolume(1,1); // mute
+        mediaPlayerMainActivity.setVolume(1,1); // unmute
         mediaPlayerMainActivityMuted = false;
         mediaPlayerMainActivityPlaying = true;
     }
@@ -67,6 +70,47 @@ public class AudioLibrary extends android.app.Application {
         mediaPlayerMainActivity.reset(); // mute
         mediaPlayerMainActivityPlaying = false;
     }
+
+    //-- background music score start screan -------------------------------------------------------
+
+    //-- background music score in game ------------------------------------------------------------
+
+    public static void mediaPlayerGameActivityBackground(Context activity_context, int resource) {
+        if(mediaPlayerGameActivity!=null) {
+            if (mediaPlayerGameActivity.isPlaying() || mediaPlayerGameActivity.isLooping()) {
+                mediaPlayerGameActivity.reset(); // if sound already playing then set back to 0 (cut off playing sound ad start new one)
+            }
+        }
+        mediaPlayerGameActivity = MediaPlayer.create(activity_context, resource);
+        mediaPlayerGameActivity.setLooping(true); // play the intro in
+        mediaPlayerGameActivity.start();
+    }
+
+    public static void mediaPlayerGameActivityBackgroundStop(){
+        mediaPlayerGameActivity.reset(); // mute
+        track1MediaPlaying = false;
+    }
+
+    //-- background music score in game ------------------------------------------------------------
+
+    //-- background music score in result-----------------------------------------------------------
+
+    public static void mediaPlayerResultActivityBackground(Context activity_context, int resource) {
+        if(mediaPlayerResultActivity!=null) {
+            if (mediaPlayerResultActivity.isPlaying() || mediaPlayerResultActivity.isLooping()) {
+                mediaPlayerResultActivity.reset(); // if sound already playing then set back to 0 (cut off playing sound ad start new one)
+            }
+        }
+        mediaPlayerResultActivity = MediaPlayer.create(activity_context, resource);
+        mediaPlayerResultActivity.setLooping(true); // play the intro in
+        mediaPlayerResultActivity.start();
+    }
+
+    public static void mediaPlayerResultActivityBackgroundStop(){
+        mediaPlayerResultActivity.reset(); // mute
+    }
+
+    //-- background music score in result-----------------------------------------------------------
 
     public static void setupMediaPlayerTrack3(Context activity_context, int resource) {
 

@@ -1,10 +1,8 @@
 package com.dennis_brink.android.ferdithefly;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -13,14 +11,14 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class ResultActivity extends AppCompatActivity {
+public class ResultActivity extends AppCompatActivity implements IConstants {
 
     TextView textViewResultInfo, textViewResultScore, textViewResultHighScore;
     ImageView imageViewEnd, imageViewWin, imageViewWinLoss;
     AppCompatButton btnAgain;
 
     int score;
-    int highscore;
+    int high_score;
     String type; // type of ending (win or loss)
     SharedPreferences sharedPreferences;
 
@@ -45,29 +43,33 @@ public class ResultActivity extends AppCompatActivity {
             type = "loss";
         }
 
-        textViewResultScore.setText("Your Score: " + score);
+        textViewResultScore.setText(String.format(
+                getResources().getString(R.string._yourscore), ""+score));
 
-        sharedPreferences = this.getSharedPreferences("ferdi", MODE_PRIVATE); // this is the name of the collection of preferences
-        highscore = sharedPreferences.getInt("highscore", 0);
+        sharedPreferences = this.getSharedPreferences(SPDB_NAME, MODE_PRIVATE); // this is the name of the collection of preferences
+        high_score = sharedPreferences.getInt(SPDB_FIELD, 0); // get saved high score
 
         if(score >= 500){ // 500+ is win
-            if(score >= highscore) {
+            if(score >= high_score) {
                 imageViewWin.setVisibility(View.VISIBLE);
-                textViewResultInfo.setText("Ferdi lives!\nHe's havin' a beer with his friends! Get one yourself, you earned it...");
-                textViewResultHighScore.setText("High Score: " + score);
-                sharedPreferences.edit().putInt("highscore", score).apply();
+                textViewResultInfo.setText(R.string._win);
+                textViewResultHighScore.setText(String.format(
+                        getResources().getString(R.string._highscore), ""+score));
+                sharedPreferences.edit().putInt(SPDB_FIELD, score).apply();
             }
         } else {
-            if (score >= highscore){ // < 500 you died
+            if (score >= high_score){ // < 500 you died but with a high score
                 imageViewWinLoss.setVisibility(View.VISIBLE);
-                textViewResultInfo.setText("Ferdi died; but that's ok because you have a new HighScore!\n LET'S CELEBRATE!");
+                textViewResultInfo.setText(R.string._losswithhighscore);
                 type="win";
-                textViewResultHighScore.setText("High Score: " + score);
-                sharedPreferences.edit().putInt("highscore", score).apply();
+                textViewResultHighScore.setText(String.format(
+                        getResources().getString(R.string._highscore), ""+score));
+                sharedPreferences.edit().putInt(SPDB_FIELD, score).apply(); // save high score
             } else {
-                imageViewEnd.setVisibility(View.VISIBLE); // you died without an highscore
-                textViewResultInfo.setText("Ferdi died because of you! Maybe you should just..go away!");
-                textViewResultHighScore.setText("High Score: " + highscore);
+                imageViewEnd.setVisibility(View.VISIBLE); // you died without an high score
+                textViewResultInfo.setText(R.string._totalloss);
+                textViewResultHighScore.setText(String.format(
+                        getResources().getString(R.string._highscore), ""+high_score));
             }
         }
 
@@ -83,20 +85,20 @@ public class ResultActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         try {
-            AudioLibrary.mediaPlayerTrack1Stop();
             if(type.equals("loss")){
-                AudioLibrary.setupMediaPlayerTrack1(ResultActivity.this, R.raw.sinister);
+                AudioLibrary.mediaPlayerResultActivityBackground(ResultActivity.this, R.raw.sinister);
             } else {
-                AudioLibrary.setupMediaPlayerTrack1(ResultActivity.this, R.raw.win);
+                AudioLibrary.mediaPlayerResultActivityBackground(ResultActivity.this, R.raw.win);
             }
         } catch (Exception e){
-            Log.d("DENNIS_B", "Start mediaplayer error " + e.getLocalizedMessage());
+            Log.d(TAG, "Start media player error " + e.getLocalizedMessage());
         }
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        //AudioLibrary.mediaPlayerTrack1Stop();
+    protected void onPause() {
+        AudioLibrary.mediaPlayerResultActivityBackgroundStop();
+        super.onPause();
     }
+
 }

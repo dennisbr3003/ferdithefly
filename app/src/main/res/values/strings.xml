@@ -1,7 +1,12 @@
 <resources>
     <string name="app_name">Ferdi the Fly</string>
-    <string name="info">Ferdi needs to gather 500 coins in order to reach his friends and have a beer. But there are thugs lurking that want to prevent that. Your job is to help Ferdi get through!</string>
+    <string name="_info">Ferdi needs to gather 500 coins in order to reach his friends and have a beer. But there are thugs lurking that want to prevent that. Your job is to help Ferdi get through!</string>
     <string name="_quit">Are you sure you want to quit the game?</string>
     <string name="_btnquit">Quit game</string>
     <string name="_btncancel">Back</string>
+    <string name="_losswithhighscore">Ferdi died…\n but that\'s OK because you have a new HighScore!\n LET\'S CELEBRATE!</string>
+    <string name="_totalloss">Ferdi died because of you! Maybe you should just..go away!</string>
+    <string name="_win">Ferdi lives!\nHe\'s havin\' a beer with his friends! Get one yourself, you earned it…</string>
+    <string name="_yourscore">Your score: %1$s</string>
+    <string name="_highscore">High Score: %1$s</string>
 </resources>

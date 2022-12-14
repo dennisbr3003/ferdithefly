@@ -177,7 +177,7 @@
         android:textColor="@android:color/holo_red_dark"
         android:background="@drawable/textview_gradient"
         android:textStyle="bold"
-        android:text="@string/info"
+        android:text="@string/_info"
         android:gravity="center"
         android:textSize="18dp"/>
 

@@ -9,5 +9,7 @@ public interface IConstants {
     }
 
     String TAG = "DENNIS_B";
+    String SPDB_NAME = "ferdithefly";
+    String SPDB_FIELD = "highscore";
 
 }

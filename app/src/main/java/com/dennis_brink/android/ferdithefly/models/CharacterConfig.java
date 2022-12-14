@@ -1,16 +1,16 @@
 package com.dennis_brink.android.ferdithefly.models;
 
-import android.util.Log;
 import android.widget.ImageView;
+import com.dennis_brink.android.ferdithefly.IConstants;
 
-public class CharacterConfig {
+public class CharacterConfig implements IConstants {
 
     private int current_speed = 0;
     private int initial_speed = 0;
     private ImageView imageView;
-    private String type = "";
+    private characterType type = null;
 
-    public CharacterConfig(int current_speed, ImageView imageView, String type) {
+    public CharacterConfig(int current_speed, ImageView imageView, characterType type) {
         this.current_speed = current_speed;
         this.imageView = imageView;
         this.type = type;
@@ -28,9 +28,7 @@ public class CharacterConfig {
     }
 
     public void increase_speed(int speed) {
-        Log.d("DENNIS_B", "current speed " + this.current_speed);
         this.current_speed -= speed;
-        Log.d("DENNIS_B", "new current speed " + this.current_speed);
     }
 
     public void decrease_speed(int speed) {
@@ -53,11 +51,11 @@ public class CharacterConfig {
         this.imageView = imageView;
     }
 
-    public String getType() {
+    public characterType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(characterType type) {
         this.type = type;
     }
 }

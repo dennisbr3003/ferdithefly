@@ -179,14 +179,14 @@ public class GameActivity extends AppCompatActivity implements IConstants {
                 // take a live
                 if (characters.get(key).getType().equals(characterType.ENEMY)) {
                     if(key.equals(characterKey.MINE) || key.equals(characterKey.MINE2)){
-                        AudioLibrary.setupMediaPlayerTrack2(GameActivity.this, R.raw.explosion);
+                        AudioLibrary.mediaPlayerGameActivitySoundFx(GameActivity.this, R.raw.explosion);
                     } else {
-                        AudioLibrary.setupMediaPlayerTrack2(GameActivity.this, R.raw.hit2_squish);
+                        AudioLibrary.mediaPlayerGameActivitySoundFx(GameActivity.this, R.raw.hit2_squish);
                     }
                     lives--;
                 }
                 if (characters.get(key).getType().equals(characterType.REWARD)){
-                    AudioLibrary.setupMediaPlayerTrack2(GameActivity.this, R.raw.reward);
+                    AudioLibrary.mediaPlayerGameActivitySoundFx(GameActivity.this, R.raw.reward);
                     score += 10;
                     textViewScore.setText(""+score);
                 }
@@ -352,7 +352,7 @@ public class GameActivity extends AppCompatActivity implements IConstants {
 
         handlerFerdiExit = new Handler();
 
-        AudioLibrary.setupMediaPlayerTrack2(GameActivity.this, R.raw.success);
+        AudioLibrary.mediaPlayerGameActivitySoundFx(GameActivity.this, R.raw.success);
 
         runnableFerdiExit = () -> {
             characterX = (int)imageViewGameFerdi.getX();
@@ -387,7 +387,7 @@ public class GameActivity extends AppCompatActivity implements IConstants {
             handler.postDelayed(runnable, gamespeed);
         } else if(score >= 500) {
 
-            AudioLibrary.mediaPlayerTrack1Stop(); // stop background music
+            AudioLibrary.mediaPlayerGameActivitySoundFxStop(); // stop background music
 
             // win: stop game
             handlerFerdi.removeCallbacks(runnableFerdi);
@@ -406,7 +406,7 @@ public class GameActivity extends AppCompatActivity implements IConstants {
 
         } else if(lives==0){
             // loose: stop game
-            AudioLibrary.mediaPlayerTrack1Stop(); // stop background music
+            AudioLibrary.mediaPlayerGameActivitySoundFxStop(); // stop background music
             handler.removeCallbacks(runnableFerdi);
             handler.removeCallbacks(runnable);
             imageViewLive3.setImageResource(R.drawable.ic_baseline_favorite_24_grey);
@@ -417,14 +417,14 @@ public class GameActivity extends AppCompatActivity implements IConstants {
     private void adjustSpeed() {
         if(score >= 200 ){
             if(!increase_level[0]==true) {
-                AudioLibrary.setupMediaPlayerTrack2(GameActivity.this, R.raw.speed_up);
+                AudioLibrary.mediaPlayerGameActivitySoundFx(GameActivity.this, R.raw.speed_up);
                 increaseCharacterSpeed(30);
                 increase_level[0]=true;
             }
         }
         if(score >= 300 ){
             if(!increase_level[1]==true) {
-                AudioLibrary.setupMediaPlayerTrack2(GameActivity.this, R.raw.speed_up);
+                AudioLibrary.mediaPlayerGameActivitySoundFx(GameActivity.this, R.raw.speed_up);
                 // add the new extra mine to the game
                 // next it will add  30 speed immediately so 115 will be good to start with
                 characters.put(characterKey.MINE2,
@@ -435,7 +435,7 @@ public class GameActivity extends AppCompatActivity implements IConstants {
         }
         if(score >= 400 ){
             if(!increase_level[2]==true) {
-                AudioLibrary.setupMediaPlayerTrack2(GameActivity.this, R.raw.speed_up);
+                AudioLibrary.mediaPlayerGameActivitySoundFx(GameActivity.this, R.raw.speed_up);
                 increaseCharacterSpeed(30);
                 increase_level[2]=true;
             }

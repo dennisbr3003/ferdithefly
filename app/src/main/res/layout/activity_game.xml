@@ -9,6 +9,16 @@
     tools:context=".GameActivity">
 
     <ImageView
+        android:id="@+id/imageViewGamePause"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/ic_media_pause" />
+
+    <ImageView
         android:id="@+id/imageViewGameFerdi"
         android:layout_width="50dp"
         android:layout_height="50dp"
@@ -32,6 +42,21 @@
         android:textColor="#DD2C00"
         android:textSize="30sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewCountdown"
+        android:layout_width="130dp"
+        android:layout_height="135dp"
+        android:background="@drawable/countdown_background"
+        android:text="5"
+        android:textAlignment="center"
+        android:textColor="@android:color/holo_orange_dark"
+        android:textSize="100sp"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

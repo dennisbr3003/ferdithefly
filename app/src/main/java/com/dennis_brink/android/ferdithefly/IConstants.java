@@ -11,5 +11,7 @@ public interface IConstants {
     String TAG = "DENNIS_B";
     String SPDB_NAME = "ferdithefly";
     String SPDB_FIELD = "highscore";
+    int COIN_VALUE = 10;
+    int SPEED_INCREASE = 30;
 
 }

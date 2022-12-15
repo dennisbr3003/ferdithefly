@@ -27,6 +27,12 @@ public class ResultActivity extends AppCompatActivity implements IConstants {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
 
+        // finish() in the previous activity will cause the onPause() event to
+        // fire. So the game is now paused. However if we get here the game is
+        // finished and not paused so we have to reset the pause switch here or
+        // get in trouble if a player wants to play again.
+        GameConfig.setGamePaused(false);
+
         textViewResultInfo = findViewById(R.id.textViewResultInfo);
         textViewResultScore = findViewById(R.id.textViewResultScore);
         textViewResultHighScore = findViewById(R.id.textViewResultHighScore);

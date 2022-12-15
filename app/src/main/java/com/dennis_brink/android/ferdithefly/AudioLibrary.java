@@ -4,7 +4,7 @@ import android.content.Context;
 import android.media.MediaPlayer;
 
 public class AudioLibrary extends android.app.Application {
-    
+
     private static MediaPlayer mediaPlayerMainActivity;
     private static MediaPlayer mediaPlayerResultActivity;
     private static MediaPlayer mediaPlayerGameActivitySoundFx;

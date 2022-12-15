@@ -9,4 +9,5 @@
     <string name="_win">Ferdi lives!\nHe\'s havin\' a beer with his friends! Get one yourself, you earned it…</string>
     <string name="_yourscore">Your score: %1$s</string>
     <string name="_highscore">High Score: %1$s</string>
+    <string name="_youwin">Congratulations! You won and Ferdi is safe...</string>
 </resources>

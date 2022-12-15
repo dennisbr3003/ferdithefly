@@ -6,6 +6,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -23,8 +24,8 @@ public class GameActivity extends AppCompatActivity implements IConstants {
     ImageView imageViewGameFerdi, imageViewGameGerm, imageViewGameMine, imageViewGameBat,
               imageViewGameMine2, imageViewGameWasp,
               imageViewLive1, imageViewLive2, imageViewLive3,
-              imageViewGameCoin, imageViewGameCoin2, imageViewGameCoinScore;
-    TextView textViewTabToPlay, textViewScore;
+              imageViewGameCoin, imageViewGameCoin2, imageViewGameCoinScore, imageViewGamePause;
+    TextView textViewTabToPlay, textViewScore, textViewCountdown;
     ConstraintLayout constraintLayout;
 
     private boolean touchControl = false;
@@ -68,13 +69,13 @@ public class GameActivity extends AppCompatActivity implements IConstants {
     boolean movementUp = false;
     boolean movementExit = false;
 
-    int gamespeed = 40;
-    int ferdisensitivity = 75;
-    int batanimationspeed = 80;
-    int waspanimationspeed = 80;
-    int ferdianimationspeed = 40;
-    int ferdiexitspeed = 20;
-    int ferdiexitinterval = 200;
+    int gameSpeed = 40;
+    int ferdiSensitivity = 75;
+    int batAnimationSpeed = 80;
+    int waspAnimationSpeed = 80;
+    int ferdiAnimationSpeed = 40;
+    int ferdiExitSpeed = 20;
+    int ferdiExitInterval = 200;
 
     HashMap<characterKey, CharacterConfig> characters = new HashMap<>();
 
@@ -97,9 +98,19 @@ public class GameActivity extends AppCompatActivity implements IConstants {
         imageViewGameCoin = findViewById(R.id.imageViewGameCoin);
         imageViewGameCoin2 = findViewById(R.id.imageViewGameCoin2);
         imageViewGameCoinScore = findViewById(R.id.imageViewGameCoinScore);
+        imageViewGamePause = findViewById(R.id.imageViewGamePause);
 
         textViewTabToPlay = findViewById(R.id.textViewStart);
         textViewScore = findViewById(R.id.textViewScore);
+        textViewCountdown = findViewById(R.id.textViewCountdown);
+
+        imageViewGamePause.setOnClickListener(view -> {
+            if(GameConfig.isGamePaused()){
+                restartGame();
+            } else {
+                pauseGame();
+            }
+        });
 
         setRotation(imageViewGameMine); // the mine should rotate
         setRotation(imageViewGameMine2); // this mine is not visible yet (will be at 300 pts)
@@ -114,22 +125,12 @@ public class GameActivity extends AppCompatActivity implements IConstants {
 
             if(!beginControl){  // screen = touched for the first time
                 beginControl = true;
-                //AudioLibrary.setupMediaPlayerTrack3(GameActivity.this, R.raw.ingame);
                 AudioLibrary.mediaPlayerGameActivityBackground(GameActivity.this, R.raw.ingame);
                 screenWidth = (int)constraintLayout.getWidth();
                 screenHeight = (int) constraintLayout.getHeight();
 
-                ferdiX = (int)imageViewGameFerdi.getX();
-                ferdiY = (int)imageViewGameFerdi.getY();
-
-                handlerFerdi = new Handler();
-                runnableFerdi= () -> {
-                    moveFerdi();
-                    handlerFerdi.postDelayed(runnableFerdi, ferdisensitivity);
-                };
-                handlerFerdi.post(runnableFerdi);
-
                 loadCharacters();
+                startFerdi();
 
                 handler = new Handler();
                 runnable = () -> {
@@ -158,9 +159,75 @@ public class GameActivity extends AppCompatActivity implements IConstants {
 
     }
 
+    public void startFerdi(){
+
+        ferdiX = (int)imageViewGameFerdi.getX();
+        ferdiY = (int)imageViewGameFerdi.getY();
+
+        handlerFerdi = new Handler();
+        runnableFerdi= () -> {
+            moveFerdi();
+            handlerFerdi.postDelayed(runnableFerdi, ferdiSensitivity);
+        };
+        handlerFerdi.post(runnableFerdi);
+
+    }
+
+    @Override
+    protected void onResume() {
+        restartGame();
+        super.onResume();
+    }
+
+    private void pauseGame(){
+        Log.d(TAG, "pauseGame - Game paused");
+        for (characterKey key : characters.keySet()) {
+           characters.get(key).full_stop(screenWidth * 2);
+        }
+        handlerFerdi.removeCallbacks(runnableFerdi);
+        AudioLibrary.mediaPlayerGameActivityBackgroundStop();
+        GameConfig.setGamePaused(true);
+        imageViewGamePause.setImageResource(android.R.drawable.ic_media_play);
+    }
+
+    private void restartGame(){
+        Log.d(TAG, "restartGame - Game paused " + GameConfig.isGamePaused());
+        try {
+            if(GameConfig.isGamePaused()) {
+                textViewCountdown.setVisibility(View.VISIBLE);
+                textViewCountdown.bringToFront();
+                new CountDownTimer(5000, 1000){
+
+                    @Override
+                    public void onTick(long l) {
+                        textViewCountdown.setText(String.valueOf(l/1000));
+                        if(textViewCountdown.getText().equals("3")){
+                            AudioLibrary.mediaPlayerGameActivitySoundFx(GameActivity.this, R.raw.prepare_yourself);
+                        }
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        imageViewGamePause.setImageResource(android.R.drawable.ic_media_pause);
+                        textViewCountdown.setVisibility(View.INVISIBLE);
+                        for (characterKey key : characters.keySet()) {
+                            characters.get(key).restart();
+                        }
+                        AudioLibrary.mediaPlayerGameActivityBackground(GameActivity.this, R.raw.ingame);
+                        startFerdi();
+                        GameConfig.setGamePaused(false);
+                    }
+                }.start();
+
+            }
+        } catch (Exception e){
+            Log.d(TAG, "Error occurred restarting the game: " + e.getLocalizedMessage());
+        }
+    }
+
     private void characterCollisionHandler() {
 
-        ImageView character = null;
+        ImageView character;
 
         for (characterKey key : characters.keySet()) {
 
@@ -181,14 +248,14 @@ public class GameActivity extends AppCompatActivity implements IConstants {
                     if(key.equals(characterKey.MINE) || key.equals(characterKey.MINE2)){
                         AudioLibrary.mediaPlayerGameActivitySoundFx(GameActivity.this, R.raw.explosion);
                     } else {
-                        AudioLibrary.mediaPlayerGameActivitySoundFx(GameActivity.this, R.raw.hit2_squish);
+                        AudioLibrary.mediaPlayerGameActivitySoundFx(GameActivity.this, R.raw.hit7);
                     }
                     lives--;
                 }
                 if (characters.get(key).getType().equals(characterType.REWARD)){
                     AudioLibrary.mediaPlayerGameActivitySoundFx(GameActivity.this, R.raw.reward);
-                    score += 10;
-                    textViewScore.setText(""+score);
+                    score += COIN_VALUE;
+                    textViewScore.setText(String.valueOf(score));
                 }
             }
         }
@@ -197,7 +264,7 @@ public class GameActivity extends AppCompatActivity implements IConstants {
 
     private void characterControl() {
 
-        ImageView character = null;
+        ImageView character;
 
         for (characterKey key : characters.keySet()) {
 
@@ -256,7 +323,7 @@ public class GameActivity extends AppCompatActivity implements IConstants {
                 imageViewGameWasp.setImageResource(R.drawable.b1);
                 imageViewGameWasp.setTag("b_1");
             }
-            handlerWaspAnimation.postDelayed(runnableWaspAnimation, waspanimationspeed);
+            handlerWaspAnimation.postDelayed(runnableWaspAnimation, waspAnimationSpeed);
         };
 
         handlerWaspAnimation.post(runnableWaspAnimation);
@@ -273,7 +340,7 @@ public class GameActivity extends AppCompatActivity implements IConstants {
                 imageViewGameBat.setImageResource(R.drawable.bat_1);
                 imageViewGameBat.setTag("bat_1");
             }
-            handlerBatAnimation.postDelayed(runnableBatAnimation, batanimationspeed);
+            handlerBatAnimation.postDelayed(runnableBatAnimation, batAnimationSpeed);
         };
 
         handlerBatAnimation.post(runnableBatAnimation);
@@ -292,7 +359,7 @@ public class GameActivity extends AppCompatActivity implements IConstants {
                     imageViewGameFerdi.setTag("bat_1");
                 }
             }
-            handlerFerdiAnimation.postDelayed(runnableFerdiAnimation, ferdianimationspeed);
+            handlerFerdiAnimation.postDelayed(runnableFerdiAnimation, ferdiAnimationSpeed);
         };
 
         handlerFerdiAnimation.post(runnableFerdiAnimation);
@@ -358,11 +425,11 @@ public class GameActivity extends AppCompatActivity implements IConstants {
             characterX = (int)imageViewGameFerdi.getX();
             // Ferdi moves from left to right so +
             movementExit = true; // start animation of wings here
-            characterX = characterX + (screenWidth / ferdiexitinterval);
+            characterX = characterX + (screenWidth / ferdiExitInterval);
             imageViewGameFerdi.setX((float) characterX);
             imageViewGameFerdi.setY((float) screenHeight / 2);
             if(imageViewGameFerdi.getX() <= screenWidth) {
-                handlerFerdiExit.postDelayed(runnableFerdiExit, ferdiexitspeed); // Ferdi is not there yet
+                handlerFerdiExit.postDelayed(runnableFerdiExit, ferdiExitSpeed); // Ferdi is not there yet
             } else { // Ferdi is off the screen so stop and show result
                 handlerFerdiExit.removeCallbacks(runnableFerdiExit);
                 handlerFerdiAnimation.removeCallbacks(runnableFerdiAnimation);
@@ -384,59 +451,84 @@ public class GameActivity extends AppCompatActivity implements IConstants {
             if(lives == 1){
                 imageViewLive2.setImageResource(R.drawable.ic_baseline_favorite_24_grey);
             }
-            handler.postDelayed(runnable, gamespeed);
+            handler.postDelayed(runnable, gameSpeed);
         } else if(score >= 500) {
 
-            AudioLibrary.mediaPlayerGameActivitySoundFxStop(); // stop background music
+            new CountDownTimer(1000, 500) {
+                @Override
+                public void onTick(long l) {
+                    // wait for the final sound effect to finish
+                }
 
-            // win: stop game
-            handlerFerdi.removeCallbacks(runnableFerdi);
-            handler.removeCallbacks(runnable);
-            // set screen touch passive (Ferdi won't react anymore)
-            constraintLayout.setEnabled(false);
+                @Override
+                public void onFinish() {
 
-            // hide everybody but Ferdi
-            hideAllCharactersButFerdi();
+                    AudioLibrary.mediaPlayerGameActivitySoundFxStop(); // stop background music
 
-            //Set a text indicating the game is won
-            textViewTabToPlay.setVisibility(View.VISIBLE);
-            textViewTabToPlay.setText("Congratulations! You won and Ferdi is safe...");
+                    // win: stop game
+                    handlerFerdi.removeCallbacks(runnableFerdi);
+                    handler.removeCallbacks(runnable);
+                    // set screen touch passive (Ferdi won't react anymore)
+                    constraintLayout.setEnabled(false);
 
-            startFerdiExitAnimation();
+                    // hide everybody but Ferdi
+                    hideAllCharactersButFerdi();
+
+                    //Set a text indicating the game is won
+                    textViewTabToPlay.setVisibility(View.VISIBLE);
+                    textViewTabToPlay.setText(R.string._youwin);
+
+                    startFerdiExitAnimation();
+                }
+            }.start();
+
 
         } else if(lives==0){
             // loose: stop game
-            AudioLibrary.mediaPlayerGameActivitySoundFxStop(); // stop background music
-            handler.removeCallbacks(runnableFerdi);
-            handler.removeCallbacks(runnable);
-            imageViewLive3.setImageResource(R.drawable.ic_baseline_favorite_24_grey);
-            startResult("loss");
+
+            new CountDownTimer(1000, 500) {
+                @Override
+                public void onTick(long l) {
+                    // wait for the final sound effect to finish
+                }
+
+                @Override
+                public void onFinish() {
+
+                    AudioLibrary.mediaPlayerGameActivitySoundFxStop(); // stop background music
+                    handler.removeCallbacks(runnableFerdi);
+                    handler.removeCallbacks(runnable);
+                    imageViewLive3.setImageResource(R.drawable.ic_baseline_favorite_24_grey);
+                    startResult("loss");
+                }
+            }.start();
+
         }
     }
 
     private void adjustSpeed() {
         if(score >= 200 ){
-            if(!increase_level[0]==true) {
+            if(!increase_level[0]) {
                 AudioLibrary.mediaPlayerGameActivitySoundFx(GameActivity.this, R.raw.speed_up);
-                increaseCharacterSpeed(30);
+                increaseCharacterSpeed(SPEED_INCREASE);
                 increase_level[0]=true;
             }
         }
         if(score >= 300 ){
-            if(!increase_level[1]==true) {
+            if(!increase_level[1]) {
                 AudioLibrary.mediaPlayerGameActivitySoundFx(GameActivity.this, R.raw.speed_up);
                 // add the new extra mine to the game
                 // next it will add  30 speed immediately so 115 will be good to start with
                 characters.put(characterKey.MINE2,
                         new CharacterConfig(115, imageViewGameMine2, characterType.ENEMY));
-                increaseCharacterSpeed(30);
+                increaseCharacterSpeed(SPEED_INCREASE);
                 increase_level[1]=true;
             }
         }
         if(score >= 400 ){
-            if(!increase_level[2]==true) {
+            if(!increase_level[2]) {
                 AudioLibrary.mediaPlayerGameActivitySoundFx(GameActivity.this, R.raw.speed_up);
-                increaseCharacterSpeed(30);
+                increaseCharacterSpeed(SPEED_INCREASE);
                 increase_level[2]=true;
             }
         }
@@ -444,9 +536,7 @@ public class GameActivity extends AppCompatActivity implements IConstants {
 
     public void startResult(String type){
 
-        Log.d("DENNIS_B", "stop media player background");
         AudioLibrary.mediaPlayerGameActivityBackgroundStop(); // stop background music
-        Log.d("DENNIS_B", "stopped media player background");
 
         Intent i = new Intent(GameActivity.this, ResultActivity.class);
         i.putExtra("score", score);
@@ -472,11 +562,15 @@ public class GameActivity extends AppCompatActivity implements IConstants {
         }
 
     }
-    
+
+    @Override
+    protected void onPause() {
+        pauseGame();
+        super.onPause();
+    }
+
     @Override
     public void onBackPressed() {
-
-        return;
 
     }
 }

@@ -5,10 +5,11 @@ import com.dennis_brink.android.ferdithefly.IConstants;
 
 public class CharacterConfig implements IConstants {
 
-    private int current_speed = 0;
+    private int current_speed;
     private int initial_speed = 0;
+    private int restore_speed = 0;
     private ImageView imageView;
-    private characterType type = null;
+    private characterType type;
 
     public CharacterConfig(int current_speed, ImageView imageView, characterType type) {
         this.current_speed = current_speed;
@@ -23,39 +24,26 @@ public class CharacterConfig implements IConstants {
         return current_speed;
     }
 
-    public void setCurrent_speed(int current_speed) {
-        this.current_speed = current_speed;
-    }
-
     public void increase_speed(int speed) {
+        this.restore_speed = this.current_speed;
         this.current_speed -= speed;
     }
 
-    public void decrease_speed(int speed) {
-        this.current_speed += speed;
+    public void full_stop(int speed) {
+        this.restore_speed = this.current_speed;
+        this.current_speed = speed;
     }
 
-    public void fullstop_speed() {
-        this.current_speed = 0;
-    }
-
-    public void reset_speed() {
-        this.current_speed = this.initial_speed;
+    public void restart() {
+        this.current_speed = this.restore_speed;
     }
 
     public ImageView getImageView() {
         return imageView;
     }
 
-    public void setImageView(ImageView imageView) {
-        this.imageView = imageView;
-    }
-
     public characterType getType() {
         return type;
     }
 
-    public void setType(characterType type) {
-        this.type = type;
-    }
 }

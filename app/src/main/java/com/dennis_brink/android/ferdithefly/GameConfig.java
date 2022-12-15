@@ -2,13 +2,13 @@ package com.dennis_brink.android.ferdithefly;
 
 public class GameConfig extends android.app.Application {
 
-    private boolean gameStarted = false;
+    private static boolean gamePaused = false;
 
-    public boolean isGameStarted(){
-        return gameStarted;
+    public static boolean isGamePaused(){
+        return gamePaused;
     }
 
-    public void setGameStarted(boolean b){
-        this.gameStarted = b;
+    public static void setGamePaused(boolean b){
+        gamePaused = b;
     }
 }

@@ -6,18 +6,14 @@ import com.dennis_brink.android.ferdithefly.IConstants;
 public class CharacterConfig implements IConstants {
 
     private int current_speed;
-    private int initial_speed = 0;
     private int restore_speed = 0;
-    private ImageView imageView;
-    private characterType type;
+    private final ImageView imageView;
+    private final characterType type;
 
     public CharacterConfig(int current_speed, ImageView imageView, characterType type) {
         this.current_speed = current_speed;
         this.imageView = imageView;
         this.type = type;
-        if(this.initial_speed == 0){
-            this.initial_speed = current_speed;
-        }
     }
 
     public int getCurrent_speed() {

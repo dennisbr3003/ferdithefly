@@ -9,9 +9,10 @@ public interface IConstants {
     }
 
     String TAG = "DENNIS_B";
-    String SPDB_NAME = "ferdithefly";
-    String SPDB_FIELD = "highscore";
+    String SPDB_NAME = "ferdiTheFly";
+    String SPDB_FIELD = "highScore";
     int COIN_VALUE = 10;
-    int SPEED_INCREASE = 30;
+    int SPEED_INCREASE_A = 30;
+    int SPEED_INCREASE_B = 25;
 
 }

@@ -11,6 +11,8 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,6 +20,7 @@ import android.widget.TextView;
 import com.dennis_brink.android.ferdithefly.models.CharacterConfig;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 public class GameActivity extends AppCompatActivity implements IConstants {
 
@@ -104,8 +107,10 @@ public class GameActivity extends AppCompatActivity implements IConstants {
         textViewScore = findViewById(R.id.textViewScore);
         textViewCountdown = findViewById(R.id.textViewCountdown);
 
+        imageViewGamePause.bringToFront();
+
         imageViewGamePause.setOnClickListener(view -> {
-            if(GameConfig.isGamePaused()){
+            if(GameState.isGamePaused()){
                 restartGame();
             } else {
                 pauseGame();
@@ -182,18 +187,18 @@ public class GameActivity extends AppCompatActivity implements IConstants {
     private void pauseGame(){
         Log.d(TAG, "pauseGame - Game paused");
         for (characterKey key : characters.keySet()) {
-           characters.get(key).full_stop(screenWidth * 2);
+           Objects.requireNonNull(characters.get(key)).full_stop(screenWidth * 2);
         }
         handlerFerdi.removeCallbacks(runnableFerdi);
         AudioLibrary.mediaPlayerGameActivityBackgroundStop();
-        GameConfig.setGamePaused(true);
+        GameState.setGamePaused(true);
         imageViewGamePause.setImageResource(android.R.drawable.ic_media_play);
     }
 
     private void restartGame(){
-        Log.d(TAG, "restartGame - Game paused " + GameConfig.isGamePaused());
+        Log.d(TAG, "restartGame - Game paused " + GameState.isGamePaused());
         try {
-            if(GameConfig.isGamePaused()) {
+            if(GameState.isGamePaused()) {
                 textViewCountdown.setVisibility(View.VISIBLE);
                 textViewCountdown.bringToFront();
                 new CountDownTimer(5000, 1000){
@@ -211,11 +216,11 @@ public class GameActivity extends AppCompatActivity implements IConstants {
                         imageViewGamePause.setImageResource(android.R.drawable.ic_media_pause);
                         textViewCountdown.setVisibility(View.INVISIBLE);
                         for (characterKey key : characters.keySet()) {
-                            characters.get(key).restart();
+                            Objects.requireNonNull(characters.get(key)).restart();
                         }
                         AudioLibrary.mediaPlayerGameActivityBackground(GameActivity.this, R.raw.ingame);
                         startFerdi();
-                        GameConfig.setGamePaused(false);
+                        GameState.setGamePaused(false);
                     }
                 }.start();
 
@@ -231,7 +236,7 @@ public class GameActivity extends AppCompatActivity implements IConstants {
 
         for (characterKey key : characters.keySet()) {
 
-            character = characters.get(key).getImageView();
+            character = Objects.requireNonNull(characters.get(key)).getImageView();
             int centreViewX = (int) (character.getX() + (character.getWidth() / 2));
             int centreViewY = (int) (character.getY() + (character.getHeight() / 2));
 
@@ -244,7 +249,7 @@ public class GameActivity extends AppCompatActivity implements IConstants {
                 // first move the enemy or coin of the screen
                 character.setX(screenWidth + 200);
                 // take a live
-                if (characters.get(key).getType().equals(characterType.ENEMY)) {
+                if (Objects.requireNonNull(characters.get(key)).getType().equals(characterType.ENEMY)) {
                     if(key.equals(characterKey.MINE) || key.equals(characterKey.MINE2)){
                         AudioLibrary.mediaPlayerGameActivitySoundFx(GameActivity.this, R.raw.explosion);
                     } else {
@@ -252,7 +257,7 @@ public class GameActivity extends AppCompatActivity implements IConstants {
                     }
                     lives--;
                 }
-                if (characters.get(key).getType().equals(characterType.REWARD)){
+                if (Objects.requireNonNull(characters.get(key)).getType().equals(characterType.REWARD)){
                     AudioLibrary.mediaPlayerGameActivitySoundFx(GameActivity.this, R.raw.reward);
                     score += COIN_VALUE;
                     textViewScore.setText(String.valueOf(score));
@@ -268,13 +273,13 @@ public class GameActivity extends AppCompatActivity implements IConstants {
 
         for (characterKey key : characters.keySet()) {
 
-            character = characters.get(key).getImageView();
+            character = Objects.requireNonNull(characters.get(key)).getImageView();
             character.setVisibility(View.VISIBLE);
 
             characterX = (int)character.getX();
             characterY = (int)character.getY();
 
-            characterX = characterX - (screenWidth / characters.get(key).getCurrent_speed());
+            characterX = characterX - (screenWidth / Objects.requireNonNull(characters.get(key)).getCurrent_speed());
             if(characterX <= 0){
                 characterX = screenWidth + 200; // set it back completely to the left plus an extra 200 to get completely off the screen
                 characterY = (int) Math.floor(Math.random() * screenHeight); // reset Y-axis position to a random coordinate (so it starts at a different height)
@@ -415,6 +420,20 @@ public class GameActivity extends AppCompatActivity implements IConstants {
         }).setDuration(1000).setInterpolator(new LinearInterpolator()).start();
     }
 
+    public void resetScale(View view){
+        view.clearAnimation(); // this would strip the current animation from the view
+
+        // this scale animation uses the x and y coordinates of the view to scale. Because
+        // the x axis coordinate is continuously changing because of the horizontal movement
+        // a new pattern of animation is achieved that is harder to dodge for ferdi. It is
+        // actually a former bug (fixed with setScale())turned into a feature :)
+
+        Animation animation;
+        animation = AnimationUtils.loadAnimation(GameActivity.this,R.anim.scale_animation);
+        Objects.requireNonNull(characters.get(characterKey.GERM)).getImageView().setAnimation(animation);
+
+    }
+
     private void startFerdiExitAnimation(){
 
         handlerFerdiExit = new Handler();
@@ -454,7 +473,7 @@ public class GameActivity extends AppCompatActivity implements IConstants {
             handler.postDelayed(runnable, gameSpeed);
         } else if(score >= 500) {
 
-            new CountDownTimer(1000, 500) {
+            new CountDownTimer(500, 500) {
                 @Override
                 public void onTick(long l) {
                     // wait for the final sound effect to finish
@@ -486,7 +505,7 @@ public class GameActivity extends AppCompatActivity implements IConstants {
         } else if(lives==0){
             // loose: stop game
 
-            new CountDownTimer(1000, 500) {
+            new CountDownTimer(500, 500) {
                 @Override
                 public void onTick(long l) {
                     // wait for the final sound effect to finish
@@ -510,7 +529,7 @@ public class GameActivity extends AppCompatActivity implements IConstants {
         if(score >= 200 ){
             if(!increase_level[0]) {
                 AudioLibrary.mediaPlayerGameActivitySoundFx(GameActivity.this, R.raw.speed_up);
-                increaseCharacterSpeed(SPEED_INCREASE);
+                increaseCharacterSpeed(SPEED_INCREASE_A);
                 increase_level[0]=true;
             }
         }
@@ -519,16 +538,17 @@ public class GameActivity extends AppCompatActivity implements IConstants {
                 AudioLibrary.mediaPlayerGameActivitySoundFx(GameActivity.this, R.raw.speed_up);
                 // add the new extra mine to the game
                 // next it will add  30 speed immediately so 115 will be good to start with
+                resetScale(Objects.requireNonNull(characters.get(characterKey.GERM)).getImageView());
                 characters.put(characterKey.MINE2,
                         new CharacterConfig(115, imageViewGameMine2, characterType.ENEMY));
-                increaseCharacterSpeed(SPEED_INCREASE);
+                increaseCharacterSpeed(SPEED_INCREASE_A);
                 increase_level[1]=true;
             }
         }
         if(score >= 400 ){
             if(!increase_level[2]) {
                 AudioLibrary.mediaPlayerGameActivitySoundFx(GameActivity.this, R.raw.speed_up);
-                increaseCharacterSpeed(SPEED_INCREASE);
+                increaseCharacterSpeed(SPEED_INCREASE_B);
                 increase_level[2]=true;
             }
         }
@@ -547,8 +567,10 @@ public class GameActivity extends AppCompatActivity implements IConstants {
 
     private void hideAllCharactersButFerdi(){
 
+        Objects.requireNonNull(characters.get(characterKey.GERM)).getImageView().clearAnimation();
+
         for (characterKey key : characters.keySet()) {
-            characters.get(key).getImageView().setVisibility(View.INVISIBLE);
+            Objects.requireNonNull(characters.get(key)).getImageView().setVisibility(View.INVISIBLE);
         }
 
     }
@@ -556,8 +578,8 @@ public class GameActivity extends AppCompatActivity implements IConstants {
     private void increaseCharacterSpeed(int speed){
 
         for (characterKey key : characters.keySet()) {
-            if(!characters.get(key).getType().equals(characterType.REWARD)) {
-                characters.get(key).increase_speed(speed);
+            if(!Objects.requireNonNull(characters.get(key)).getType().equals(characterType.REWARD)) {
+                Objects.requireNonNull(characters.get(key)).increase_speed(speed);
             }
         }
 

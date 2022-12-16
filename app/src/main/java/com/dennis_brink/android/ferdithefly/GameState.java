@@ -1,6 +1,6 @@
 package com.dennis_brink.android.ferdithefly;
 
-public class GameConfig extends android.app.Application {
+public class GameState extends android.app.Application {
 
     private static boolean gamePaused = false;
 

@@ -9,5 +9,12 @@
     <string name="_win">Ferdi lives!\nHe\'s havin\' a beer with his friends! Get one yourself, you earned it…</string>
     <string name="_yourscore">Your score: %1$s</string>
     <string name="_highscore">High Score: %1$s</string>
-    <string name="_youwin">Congratulations! You won and Ferdi is safe...</string>
+    <string name="_youwin">Congratulations! You won and Ferdi is safe…</string>
+    <string name="_nicework">Nice work</string>
+    <string name="_playagain">Play Again</string>
+    <string name="_highscore200">High Score 200</string>
+    <string name="_yourscore50">Your Score: 50</string>
+    <string name="_ferdilosstag">ferdi_loss</string>
+    <string name="_ferdilosswintag">ferdi_loss_win</string>
+    <string name="_ferdiwintag">ferdi_win</string>
 </resources>

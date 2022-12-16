@@ -12,7 +12,7 @@
         android:layout_width="293dp"
         android:layout_height="125dp"
         android:layout_marginTop="15dp"
-        android:text="Nice work"
+        android:text="@string/_nicework"
         android:textAlignment="center"
         android:textColor="#DD2C00"
         android:textSize="25sp"
@@ -25,24 +25,24 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Your Score: 50"
+        android:text="@string/_yourscore50"
         android:textColor="#DD2C00"
         android:textSize="25sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageViewTombStone"
-        app:layout_constraintTop_toBottomOf="@+id/textViewResultHighScore" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewResultInfo" />
 
     <TextView
         android:id="@+id/textViewResultHighScore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="7dp"
-        android:text="High Score 200"
+        android:text="@string/_highscore200"
         android:textColor="#DD2C00"
         android:textSize="25sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageViewTombStone"
-        app:layout_constraintTop_toBottomOf="@+id/textViewResultInfo" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewResultScore" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnResultPlayAgain"
@@ -52,13 +52,14 @@
         android:background="@drawable/button_result_background"
         android:paddingStart="40dp"
         android:paddingEnd="40dp"
-        android:text="Play Again"
+        android:text="@string/_playagain"
         android:textAllCaps="false"
-        android:textColor="@android:color/holo_red_dark"
+        android:textColor="#EF6C00"
         android:textSize="25sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageViewTombStone"
-        app:layout_constraintTop_toBottomOf="@+id/textViewResultScore" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewResultHighScore"
+        tools:ignore="TextContrastCheck" />
 
     <ImageView
         android:id="@+id/imageViewTombStone"
@@ -66,6 +67,7 @@
         android:layout_height="350dp"
         android:layout_marginStart="4dp"
         android:layout_marginBottom="5dp"
+        android:contentDescription="@string/_ferdilosstag"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -77,6 +79,7 @@
         android:layout_height="350dp"
         android:layout_marginStart="4dp"
         android:layout_marginBottom="5dp"
+        android:contentDescription="@string/_ferdilosswintag"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -88,6 +91,7 @@
         android:layout_height="300dp"
         android:layout_marginStart="30dp"
         android:layout_marginBottom="20dp"
+        android:contentDescription="@string/_ferdiwintag"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

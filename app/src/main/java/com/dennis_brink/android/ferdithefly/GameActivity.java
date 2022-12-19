@@ -205,7 +205,7 @@ public class GameActivity extends AppCompatActivity implements IConstants {
 
                     @Override
                     public void onTick(long l) {
-                        textViewCountdown.setText(String.valueOf(l/1000));
+                        textViewCountdown.setText(String.valueOf((l/1000) + 1)); // + 1 or it will start at 4
                         if(textViewCountdown.getText().equals("3")){
                             AudioLibrary.mediaPlayerGameActivitySoundFx(GameActivity.this, R.raw.prepare_yourself);
                         }
